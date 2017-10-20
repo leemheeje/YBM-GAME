@@ -1,0 +1,24 @@
+*{margin: 0; padding: 0; border: none; box-sizing: border-box;}
+html, body{height: 100%;}
+body{background: #fafafa;}
+.blGroup{margin: 0 auto; width: 800px; height: 100%; background: #fff; position: relative;}
+.blGroupInBox{width: 100%; height: 100%; position: relative;}
+.box{width: 340px; height: 50px; border: 1px solid #ddd;}
+.box.b_bar{ position: absolute; left: 50%; margin-left: -170px; bottom: 0;}
+.box{position: absolute;}
+.box:nth-child(2){left: 278px;}
+.box:nth-child(3){left: 410px;}
+.box:nth-child(4){left: 350px;}
+.box:nth-child(5){left: 129px;}
+.box:nth-child(6){left: 570px;}
+.box:nth-child(7){left: 390px;}
+
+
+
+
+
+
+
+
+
+.guideline{position: absolute; left: 80px; width: 340px; height: 100%; background: red; opacity: .1; top: 0; z-index: 1000;}

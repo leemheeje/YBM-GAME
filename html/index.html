@@ -2,17 +2,158 @@
 <html>
 
 <head>
-    <meta charset="UTF-8" />
-    <title>BuildBridge</title>
+	<meta charset="UTF-8" />
+	<title>BuildBridge</title>
+	<script type="text/javascript">
+	if(location.href.indexOf(':8000') != -1) document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
+	</script>
+	<script src="./js/plugin/jquery-1.9.1.min.js"></script>
+	<script src="./js/plugin/jquery-ui-1.9.2.custom.min.js"></script>
+	<script src="./js/plugin/jquery-ui-1.9.2.custom.min.js"></script>
+	<script src="./js/plugin/jquery.easing.1.3.js"></script>
+	<script src="./js/plugin/jquery.transform.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 
-<body>1
-    <script type="text/javascript">
-    //var gamePath = Game.gamePath[Game.gameCode]; //폴더경로 변경값
-    jQuery(document).ready(function($){
-            
-    });
-    </script>
+<body>
+	<div class="blGroup">
+		<div class="guideline"></div>
+		<div class="blGroupInBox">
+			<div class="box b_bar bBar"></div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	//var gamePath = Game.gamePath[Game.gameCode]; //폴더경로 변경값
+	jQuery(document).ready(function($) {
+		var YBM_GAME_TYPE05 = function(obj) {
+			this.obj = $.extend({
+				contr: {
+					left: 0,
+					right: 0,
+					drop: 32,
+				},
+				box: ['130', '190', '160', '100', '230', '80'],
+				random: false,
+			}, obj);
+			this.crrtDropBox = null;
+			this.crrtSuccess = null;
+			this.crrtBoxCount = 0;
+			this.crrtBoxHeight = 0;
+			this.loop = function() {};
+			this.boxObj = {
+				boxWrap: '.blGroupInBox',
+				boxClass: '.dropBox',
+				count: 0,
+				html: '',
+				count: 0,
+			};
+			this.setPosition = {
+				el: null,
+				x: 0,
+				y: 0,
+				w: 0,
+				h: 0,
+			};
+			this.setPrevPosition = {
+				el: null,
+				x: 0,
+				y: 0,
+				w: 0,
+				h: 0,
+			};
+			this.lmtLineOpt = {
+				el: $('.guideline'),
+				w: 0,
+				x: 0,
+			};
+			this.init();
+		};
+		YBM_GAME_TYPE05.prototype = {
+			init: function(obj) {
+				this.set();
+				this.crrtDropBox = $('.bBar');
+				this.setPositionFun();
+				this.dropBind();
+			},
+			set: function() {
+				if(!this.obj.random) {
+					var _this = this;
+					this.obj.box.forEach(function(items, count) {
+						_this.boxObj.html += '<div class="box w' + items + ' ' + _this.glFun().clsFormat(_this.boxObj.boxClass) + '" style="width: ' + items + 'px" data-count="' + count + '" data-box-width="' + items + '"></div>';
+					});
+					$(this.boxObj.boxWrap).append(this.boxObj.html);
+				}
+			},
+			setPositionFun: function() {
+				this.setPosition.el = this.crrtDropBox;
+				this.setPosition.x = this.setPosition.el[0].offsetLeft;
+				this.setPosition.y = this.setPosition.el[0].offsetTop;
+				this.setPosition.w = this.setPosition.el[0].offsetWidth;
+				this.setPosition.h = this.setPosition.el[0].offsetHeight;
+				this.lmtLineSet(this.setPosition.w, this.setPosition.x);
+			},
+			lmtLineSet: function(w, x) {
+				var $crrtBoxWidth = $(this.boxObj.boxClass + '[data-count=' + this.crrtBoxCount + ']').width();
+				if(this.crrtBoxCount) {
+					$prevBoxWidth = $(this.boxObj.boxClass + '[data-count=' + (this.crrtBoxCount - 1) + ']').width();
+				} else {
+					$prevBoxWidth = $('.bBar').width();
+				}
+				this.lmtLineOpt.w = w + $crrtBoxWidth;
+				this.lmtLineOpt.x = x - ($crrtBoxWidth / 2);
+				this.lmtLineOpt.el.css({
+					'width': this.lmtLineOpt.w,
+					'left': this.lmtLineOpt.x,
+				});
+				console.log(this.lmtLineOpt.w)
+				console.log(this.lmtLineOpt.x)
+				console.log(this.setPosition.w)
+				console.log(this.setPosition.x)
+				console.log($prevBoxWidth)
+			},
+			dropBind: function() {
+				var _this = this;
+				$(document).keyup(function() {
+					if(event.keyCode == _this.obj.contr.drop) {
+						_this.crrtSuccess = true;
+						_this.crrtBoxCount++;
+						_this.dropMove();
+
+					}
+				});
+			},
+			dropMove: function() {
+				this.crrtDropBox = $(this.boxObj.boxClass + '[data-count=' + this.boxObj.count + ']');
+				this.boxObj.count++;
+				this.setPositionFun();
+
+				this.crrtSuccessFun();
+				if(this.crrtSuccess) {
+					this.crrtBoxHeight += this.setPosition.h;
+				}
+				this.crrtDropBox.css({
+					'top': $(document).height() - (this.crrtBoxHeight + this.setPosition.h)
+				});
+			},
+			crrtSuccessFun: function() {
+				if(this.lmtLineOpt.x < this.setPosition.x) {
+					this.crrtSuccess = true;
+				} else {
+					this.crrtSuccess = false;
+				}
+			},
+			glFun: function() {
+				var clsFormat = function(nm) {
+					return nm.replace('.', '');
+				};
+				return {
+					clsFormat: clsFormat,
+				};
+			},
+		};
+		var initName = new YBM_GAME_TYPE05({});
+	});
+	</script>
 </body>
 
 </html>
