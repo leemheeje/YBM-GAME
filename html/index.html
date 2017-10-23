@@ -39,22 +39,20 @@
 			this.crrtSuccess = null;
 			this.crrtBoxCount = 0;
 			this.crrtBoxHeight = 0;
+			this.crrtBoxPosition = {
+				x: 0,
+				y: 0,
+				w: 0,
+				h: 0,
+			};
 			this.loop = function() {};
 			this.boxObj = {
 				boxWrap: '.blGroupInBox',
 				boxClass: '.dropBox',
 				count: 0,
 				html: '',
-				count: 0,
 			};
 			this.setPosition = {
-				el: null,
-				x: 0,
-				y: 0,
-				w: 0,
-				h: 0,
-			};
-			this.setPrevPosition = {
 				el: null,
 				x: 0,
 				y: 0,
@@ -92,12 +90,17 @@
 				this.setPosition.h = this.setPosition.el[0].offsetHeight;
 				this.lmtLineSet(this.setPosition.w, this.setPosition.x);
 			},
+			crrtBoxPositionFun: function() {
+				this.crrtBoxPosition.x = this.crrtDropBox[0].offsetLeft;
+				this.crrtBoxPosition.y = this.crrtDropBox[0].offsetTop;
+				this.crrtBoxPosition.w = this.crrtDropBox[0].offsetWidth;
+				this.crrtBoxPosition.h = this.crrtDropBox[0].offsetHeight;
+			},
 			lmtLineSet: function(w, x) {
-				var $crrtBoxWidth = $(this.boxObj.boxClass + '[data-count=' + this.crrtBoxCount + ']').width();
+				var $crrtBoxWidth = $(this.boxObj.boxClass + '[data-count=' + this.crrtBoxCount + ']').outerWidth();
+				var $prevBoxWidth = $('.bBar').outerWidth();
 				if(this.crrtBoxCount) {
-					$prevBoxWidth = $(this.boxObj.boxClass + '[data-count=' + (this.crrtBoxCount - 1) + ']').width();
-				} else {
-					$prevBoxWidth = $('.bBar').width();
+					$prevBoxWidth = $(this.boxObj.boxClass + '[data-count=' + (this.crrtBoxCount - 1) + ']').outerWidth();
 				}
 				this.lmtLineOpt.w = w + $crrtBoxWidth;
 				this.lmtLineOpt.x = x - ($crrtBoxWidth / 2);
@@ -105,11 +108,24 @@
 					'width': this.lmtLineOpt.w,
 					'left': this.lmtLineOpt.x,
 				});
-				console.log(this.lmtLineOpt.w)
+				/*console.log(this.lmtLineOpt.w)
 				console.log(this.lmtLineOpt.x)
 				console.log(this.setPosition.w)
 				console.log(this.setPosition.x)
 				console.log($prevBoxWidth)
+				console.log(this.boxObj.count)
+				console.log(this.crrtBoxCount)
+				console.log('//////////////////////')*/
+			},
+			crrtSuccessFun: function() {
+				//this.crrtBoxPosition
+				//다음타겟.x   > this.lmtLineOpt.x  &&  (다음타겟.x  + 다음타겟.w) < (this.lmtLineOtp.x+this.lmtLineOtp.w)
+				if((this.crrtBoxPosition.x > this.lmtLineOpt.x) && (this.crrtBoxPosition.x + this.crrtBoxPosition.w) < (this.lmtLineOpt.x + this.lmtLineOpt.w)) {
+					this.crrtSuccess = true;
+				} else {
+					this.crrtSuccess = false;
+				}
+				console.log(this.crrtSuccess)
 			},
 			dropBind: function() {
 				var _this = this;
@@ -118,29 +134,22 @@
 						_this.crrtSuccess = true;
 						_this.crrtBoxCount++;
 						_this.dropMove();
-
 					}
 				});
 			},
 			dropMove: function() {
 				this.crrtDropBox = $(this.boxObj.boxClass + '[data-count=' + this.boxObj.count + ']');
 				this.boxObj.count++;
-				this.setPositionFun();
-
+				this.crrtBoxPositionFun();
+				//console.log(this.crrtBoxPosition)
 				this.crrtSuccessFun();
+				this.setPositionFun();
 				if(this.crrtSuccess) {
 					this.crrtBoxHeight += this.setPosition.h;
 				}
 				this.crrtDropBox.css({
 					'top': $(document).height() - (this.crrtBoxHeight + this.setPosition.h)
 				});
-			},
-			crrtSuccessFun: function() {
-				if(this.lmtLineOpt.x < this.setPosition.x) {
-					this.crrtSuccess = true;
-				} else {
-					this.crrtSuccess = false;
-				}
 			},
 			glFun: function() {
 				var clsFormat = function(nm) {
