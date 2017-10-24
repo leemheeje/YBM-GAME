@@ -34,122 +34,134 @@
 				},
 				box: ['130', '190', '160', '100', '230', '80'],
 				random: false,
+				boxAppendWrap: '.blGroupInBox',
+				boxAddClass: '.dropBox',
+				boxInitClass: '.box',
 			}, obj);
+			this.success = true;
 			this.crrtDropBox = null;
-			this.crrtSuccess = null;
 			this.crrtBoxCount = 0;
-			this.crrtBoxHeight = 0;
-			this.crrtBoxPosition = {
-				x: 0,
-				y: 0,
-				w: 0,
-				h: 0,
+			this.nextDropBox = null;
+			this.prevDropBox = null;
+			this.prevDropBoxArry = [];
+			this.crrtDropBoxObj = {};
+			this.nextDropBoxObj = {};
+			this.prevDropBoxObj = {};
+			this.limitGuideLine = {
+				width : 470,
+				left : 165,
+				right : 470+165
 			};
-			this.loop = function() {};
-			this.boxObj = {
-				boxWrap: '.blGroupInBox',
-				boxClass: '.dropBox',
-				count: 0,
-				html: '',
-			};
-			this.setPosition = {
-				el: null,
-				x: 0,
-				y: 0,
-				w: 0,
-				h: 0,
-			};
-			this.lmtLineOpt = {
-				el: $('.guideline'),
-				w: 0,
-				x: 0,
-			};
+			this.boxCount = 0;
+			this.boxHeight = 0;
+			this.boxArry = [];
+			this.boxAppendHtml = '';
 			this.init();
 		};
 		YBM_GAME_TYPE05.prototype = {
 			init: function(obj) {
 				this.set();
 				this.crrtDropBox = $('.bBar');
-				this.setPositionFun();
+				this.boxPrevNextFun();
+				//this.setSuccess();
+				this.setBoxHeight();
 				this.dropBind();
 			},
 			set: function() {
 				if(!this.obj.random) {
 					var _this = this;
 					this.obj.box.forEach(function(items, count) {
-						_this.boxObj.html += '<div class="box w' + items + ' ' + _this.glFun().clsFormat(_this.boxObj.boxClass) + '" style="width: ' + items + 'px" data-count="' + count + '" data-box-width="' + items + '"></div>';
+						_this.boxAppendHtml += '<div class="box w' + items + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items + 'px" data-count="' + count + '" data-box-width="' + items + '"></div>';
 					});
-					$(this.boxObj.boxWrap).append(this.boxObj.html);
+					$(this.obj.boxAppendWrap).append(this.boxAppendHtml+'<div class="box" style="display: none;"></div>');
 				}
 			},
-			setPositionFun: function() {
-				this.setPosition.el = this.crrtDropBox;
-				this.setPosition.x = this.setPosition.el[0].offsetLeft;
-				this.setPosition.y = this.setPosition.el[0].offsetTop;
-				this.setPosition.w = this.setPosition.el[0].offsetWidth;
-				this.setPosition.h = this.setPosition.el[0].offsetHeight;
-				this.lmtLineSet(this.setPosition.w, this.setPosition.x);
-			},
-			crrtBoxPositionFun: function() {
-				this.crrtBoxPosition.x = this.crrtDropBox[0].offsetLeft;
-				this.crrtBoxPosition.y = this.crrtDropBox[0].offsetTop;
-				this.crrtBoxPosition.w = this.crrtDropBox[0].offsetWidth;
-				this.crrtBoxPosition.h = this.crrtDropBox[0].offsetHeight;
-			},
-			lmtLineSet: function(w, x) {
-				var $crrtBoxWidth = $(this.boxObj.boxClass + '[data-count=' + this.crrtBoxCount + ']').outerWidth();
-				var $prevBoxWidth = $('.bBar').outerWidth();
-				if(this.crrtBoxCount) {
-					$prevBoxWidth = $(this.boxObj.boxClass + '[data-count=' + (this.crrtBoxCount - 1) + ']').outerWidth();
+			boxPrevNextFun: function($target) {
+				var _this = this;
+				var $target = $target ? $target : this.crrtDropBox;
+				this.nextDropBox = $target.next();
+				if($target.prev().is('.box')) {
+					// this.prevDropBox = $target.prev();
+					var $prev = $target.prev();
+					this.prevDropBoxArry.push($prev);
+					console.log(this.prevDropBoxArry)
+					this.prevDropBoxArry.forEach(function(items){
+						if(!items.is(':hidden')){
+							_this.prevDropBox = items;
+							return;
+						}
+					});
+					this.prevDropBoxObj = this.setBoxPosition(this.prevDropBox);
 				}
-				this.lmtLineOpt.w = w + $crrtBoxWidth;
-				this.lmtLineOpt.x = x - ($crrtBoxWidth / 2);
-				this.lmtLineOpt.el.css({
-					'width': this.lmtLineOpt.w,
-					'left': this.lmtLineOpt.x,
-				});
-				/*console.log(this.lmtLineOpt.w)
-				console.log(this.lmtLineOpt.x)
-				console.log(this.setPosition.w)
-				console.log(this.setPosition.x)
-				console.log($prevBoxWidth)
-				console.log(this.boxObj.count)
-				console.log(this.crrtBoxCount)
-				console.log('//////////////////////')*/
+				this.nextDropBoxObj = this.setBoxPosition(this.nextDropBox);
+				this.crrtDropBoxObj = this.setBoxPosition(this.crrtDropBox);
 			},
-			crrtSuccessFun: function() {
-				//this.crrtBoxPosition
-				//다음타겟.x   > this.lmtLineOpt.x  &&  (다음타겟.x  + 다음타겟.w) < (this.lmtLineOtp.x+this.lmtLineOtp.w)
-				if((this.crrtBoxPosition.x > this.lmtLineOpt.x) && (this.crrtBoxPosition.x + this.crrtBoxPosition.w) < (this.lmtLineOpt.x + this.lmtLineOpt.w)) {
-					this.crrtSuccess = true;
+			setBoxPosition: function($target) {
+				var $target = $target ? $target : this.crrtDropBox;
+				var pos = {
+					w: $target.outerWidth(),
+					h: $target.outerHeight(),
+					x: $target[0].offsetLeft,
+					y: $target[0].offsetTop,
+					r: $target.outerWidth() + $target[0].offsetLeft,
+				};
+				return {
+					width: pos.w,
+					height: pos.h,
+					left: pos.x,
+					top: pos.y,
+					right: pos.r,
+				};
+			},
+			setSuccess: function(bo) {
+				if(this.crrtDropBoxObj.left > this.limitGuideLine.left && this.crrtDropBoxObj.right < this.limitGuideLine.right) {
+					this.success = true;
+					this.setLimitGuideLine(this.crrtDropBoxObj, this.nextDropBoxObj);
 				} else {
-					this.crrtSuccess = false;
+					this.success = false;
+					this.setLimitGuideLine(this.prevDropBoxObj, this.nextDropBoxObj);
 				}
-				console.log(this.crrtSuccess)
+			},
+			setLimitGuideLine: function(prev, crrt) {
+				var w = prev.width + crrt.width;
+				var x = prev.left - (crrt.width / 2);
+				var wx = w + x;
+				this.limitGuideLine = {
+					width: w,
+					left: x,
+					right: wx,
+				};
+				$('.guideline').stop().animate({
+					'width': this.limitGuideLine.width,
+					'left': this.limitGuideLine.left,
+				});
+			},
+			setBoxHeight: function() {
+				if(this.success) {
+					this.boxHeight += this.setBoxPosition().height;
+				}
 			},
 			dropBind: function() {
 				var _this = this;
 				$(document).keyup(function() {
 					if(event.keyCode == _this.obj.contr.drop) {
-						_this.crrtSuccess = true;
-						_this.crrtBoxCount++;
+						_this.crrtDropBox = $(_this.obj.boxAddClass + '[data-count=' + _this.boxCount + ']');
+						_this.boxPrevNextFun();
+						_this.setSuccess();
+						_this.setBoxHeight();
 						_this.dropMove();
 					}
 				});
 			},
 			dropMove: function() {
-				this.crrtDropBox = $(this.boxObj.boxClass + '[data-count=' + this.boxObj.count + ']');
-				this.boxObj.count++;
-				this.crrtBoxPositionFun();
-				//console.log(this.crrtBoxPosition)
-				this.crrtSuccessFun();
-				this.setPositionFun();
-				if(this.crrtSuccess) {
-					this.crrtBoxHeight += this.setPosition.h;
-				}
 				this.crrtDropBox.css({
-					'top': $(document).height() - (this.crrtBoxHeight + this.setPosition.h)
+					'top': $(document).height() - this.boxHeight
 				});
+				if(!this.success) {
+					 // this.crrtDropBox.animate({ 'opacity': 0 }, { 'complete': function() { $(this).hide(); } });
+					 this.crrtDropBox.hide();
+				}
+				this.boxCount++;
 			},
 			glFun: function() {
 				var clsFormat = function(nm) {

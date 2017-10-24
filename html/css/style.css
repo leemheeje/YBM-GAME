@@ -10,8 +10,8 @@ body{background: #fafafa;}
 .box:nth-child(3){left: 410px;}
 .box:nth-child(4){left: 350px;}
 .box:nth-child(5){left: 329px;}
-.box:nth-child(6){left: 310px;}
-.box:nth-child(7){left: 390px;}
+.box:nth-child(6){left: 380px;}
+.box:nth-child(7){left: 388px;}
 
 
 
@@ -21,4 +21,4 @@ body{background: #fafafa;}
 
 
 
-.guideline{position: absolute; left: 80px; width: 340px; height: 100%; background: red; opacity: .1; top: 0; z-index: 1000;}
+.guideline{position: absolute; left: 165px; width: 470px; height: 100%; background: red; opacity: .1; top: 0; z-index: 1000;}
