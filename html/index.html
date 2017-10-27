@@ -3,23 +3,52 @@
 
 <head>
 	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=1280">
 	<title>BuildBridge</title>
 	<script type="text/javascript">
 	if (location.href.indexOf(':8000') != -1) document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
 	</script>
 	<script src="./js/plugin/jquery-1.9.1.min.js"></script>
 	<script src="./js/plugin/jquery-ui-1.12.1.min.js"></script>
+	<script src="./js/plugin/jquery.ui.touch-punch.min.js"></script>
 	<script src="./js/plugin/jquery.easing.1.3.js"></script>
 	<script src="./js/plugin/jquery.transform.js"></script>
 	<link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 
 <body>
-	<div class="blGroup">
-		<div class="boxSlider"></div>
-		<div class="guideline"></div>
-		<div class="blGroupInBox">
-			<div class="box b_bar bBar"></div>
+	<div class="blgm_wrap">
+		<div class="blgm_in">
+			<div class="blgm_sasl tp01">
+				<span class="sas sas01"></span>
+				<span class="sas sas02"></span>
+				<div class="sas_circle  active"></div>
+			</div>
+			<div class="blgm_lib tp01">
+				<div class="lib_tp"></div>
+				<div class="shd"></div>
+			</div>
+			<div class="blGroup">
+				<input type="hidden" name="sliderValue">
+				<div class="boxSlider"></div>
+				<div class="guideline"></div>
+				<div class="blGroupInBox">
+					<div class="box b_bar bBar"></div>
+				</div>
+			</div>
+			<div class="blgm_sasl tp02">
+				<span class="sas sas03"></span>
+				<span class="sas sas04"></span>
+				<div class="sas_circle active"></div>
+			</div>
+			<div class="blgm_water_bar"></div>
+			<div class="blgm_water">
+				<div class="water_br"></div>
+			</div>
+			<div class="blgm_lib tp02">
+				<div class="lib_tp"></div>
+				<div class="shd"></div>
+			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -27,9 +56,9 @@
 		var _this = this;
 		this.obj = $.extend(true, {
 			contr: {
-				left: 0,
-				right: 0,
-				drop: 32,
+				left: 37,
+				right: 39,
+				drop: 32, //40
 			},
 			successLength: 8,
 			successPoint: 0,
@@ -39,24 +68,28 @@
 			uiSliderLeft: 0,
 			uiSliderObj: {},
 			box: [{
+					clsnm: 'box01',
 					point: 5,
 					water: .5,
-					width: 50,
+					width: 75,
 				},
 				{
+					clsnm: 'box02',
 					point: 10,
 					water: 1,
-					width: 100,
+					width: 111,
 				},
 				{
+					clsnm: 'box03',
 					point: 15,
 					water: 1.5,
-					width: 150,
+					width: 155,
 				},
 				{
+					clsnm: 'box04',
 					point: 20,
 					water: 2,
-					width: 200,
+					width: 202,
 				},
 			],
 			random: false,
@@ -99,7 +132,7 @@
 	};
 	BuildBridge.prototype = {
 		init: function(obj) {
-			if (location.href.indexOf('localhost') != -1 ||location.href.indexOf('github') != -1 ) {
+			if (location.href.indexOf('localhost') != -1 || location.href.indexOf('github') != -1) {
 				$('.guideline').stop().animate({
 					'width': this.limitGuideLine.width,
 					'left': this.limitGuideLine.left,
@@ -118,7 +151,7 @@
 				create: function() {
 					if (!_this.obj.random) {
 						_this.obj.box.forEach(function(items) {
-							_this.boxAppendHtml += '<div class="box w' + items.width + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items.width + 'px; left: ' + _this.obj.uiSliderLeft + 'px;" data-count="' + _this.boxLength + '" data-box-width="' + items.width + '"></div>';
+							_this.boxAppendHtml += '<div class="box ' + items.clsnm + ' w' + items.width + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items.width + 'px; left: ' + _this.obj.uiSliderLeft + 'px;" data-count="' + _this.boxLength + '" data-box-width="' + items.width + '"></div>';
 							_this.boxLength++;
 						});
 						$(_this.obj.boxAppendWrap).append(_this.boxAppendHtml);
@@ -126,15 +159,23 @@
 					}
 				},
 				slider: function() {
-					$(_this.obj.uiSlider).slider($.extend(true, {
+					var $slider = $(_this.obj.uiSlider).slider($.extend(true, {
 						slide: function(e, el) {
 							_this.obj.uiSliderLeft = el.handle.offsetLeft;
 							$(_this.obj.boxAddClass).not('.drop').css('left', _this.obj.uiSliderLeft);
-
+							$('input[name=sliderValue]').val(_this.obj.uiSliderLeft);
 						},
 					}, _this.obj.uiSliderObj));
+					return $slider;
 				},
 			};
+		},
+		aniCallb: function(callb) {
+			return $.extend(false, {
+				'duration': 1000,
+				'easing': 'swing',
+				'complete': function() {},
+			}, callb);
 		},
 		boxPrevNextFun: function($target) {
 			var _this = this;
@@ -153,7 +194,7 @@
 					}
 				});
 				this.prevDropBoxObj = this.setBoxPosition(this.prevDropBox);
-				this.boxHistroyArry.push(this.prevDropBoxObj);
+				this.boxHistroyArry.unshift(this.prevDropBoxObj);
 			}
 			this.nextDropBoxObj = this.setBoxPosition(this.nextDropBox);
 			this.crrtDropBoxObj = this.setBoxPosition(this.crrtDropBox);
@@ -203,10 +244,10 @@
 					var minWidth = Math.min.apply(null, widthArry);
 					for (var i = 0; i < _this.boxHistroyArry.length; i++) {
 						if (_this.boxHistroyArry[i].width == minWidth) {
-							var minBoxObj = _this.boxHistroyArry[i];
-							var crrtBoxObj = _this.crrtDropBoxObj;
-							if (crrtBoxObj.width > _this.prevDropBoxObj.width) {
-								if (crrtBoxObj.left < minBoxObj.left && crrtBoxObj.right > minBoxObj.right) {
+							var minWidthBoxObj = _this.boxHistroyArry[i];
+							var crrtWidthBoxObj = _this.crrtDropBoxObj;
+							if (crrtWidthBoxObj.width > _this.prevDropBoxObj.width) {
+								if (crrtWidthBoxObj.left < minWidthBoxObj.left && crrtWidthBoxObj.right > minWidthBoxObj.right && (minWidthBoxObj.left - crrtWidthBoxObj.left) < minWidthBoxObj.width * 2 && (crrtWidthBoxObj.right - minWidthBoxObj.right) < minWidthBoxObj.width * 2) {
 									return true;
 								} else {
 									return false;
@@ -226,8 +267,6 @@
 			};
 		},
 		getSuccess: function() {
-			//if (this.setSuccess().cls01() && this.setSuccess().cls02() && this.setSuccess().cls03()) {
-			//this.setSuccess().cls01() && this.setSuccess().cls02()
 			if (this.setSuccess().cls01() && this.setSuccess().cls02()) {
 				this.success = true;
 				this.setLimitGuideLine(this.crrtDropBoxObj, this.nextDropBoxObj);
@@ -266,7 +305,7 @@
 			$('.guideline').stop().animate({
 				'width': this.limitGuideLine.width,
 				'left': this.limitGuideLine.left,
-			});
+			}, this.aniCallb());
 		},
 		setBoxHeight: function() {
 			if (this.success) {
@@ -276,10 +315,25 @@
 		dropBind: function() {
 			var _this = this;
 			$(document).keyup(function() {
-				if (event.keyCode == _this.obj.contr.drop) {
+				var key = event.keyCode;
+				console.log(_this)
+				if (key == _this.obj.contr.drop) {
 					_this.bindCallbFun();
 				}
 			});
+			/*$(document).keydown(function() {
+				var key = event.keyCode;
+				var sliderValue = _this.set().slider().slider('value');
+				if (key == _this.obj.contr.left) {
+					sliderValue--;
+				} else if (key == _this.obj.contr.right) {
+					sliderValue++;
+				}
+				_this.set().slider().slider('value', sliderValue);
+			});*/
+			$(document).click(function() {
+				$('.ui-slider-handle').focus();
+			}).click();
 		},
 		bindCallbFun: function() {
 			this.crrtDropBox = $(this.obj.boxAddClass + '[data-count=' + this.boxCount + ']');
@@ -304,15 +358,19 @@
 			}
 		},
 		dropMove: function() {
-			this.crrtDropBox.addClass('drop').css({
-				'top': $(document).height() - this.boxHeight
-			});
+			this.crrtDropBox.addClass('drop').animate({
+				'top': $(this.obj.boxAppendWrap).height() - this.boxHeight
+			}, this.aniCallb({
+				'duration': 300,
+			}));
 			if (!this.success) {
-				// this.crrtDropBox.animate({ 'opacity': 0 }, { 'complete': function() { $(this).hide(); } });
-				this.crrtDropBox.addClass('false').css({
-					'border-color': 'red',
-					'opacity': .2
-				});
+				this.crrtDropBox.addClass('false').animate({
+					'opacity': 0
+				}, this.aniCallb({
+					'complete': function() {
+						$(this).hide();
+					},
+				}));
 			}
 			this.boxCount++;
 		},
