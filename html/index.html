@@ -5,11 +5,10 @@
 	<meta charset="UTF-8" />
 	<title>BuildBridge</title>
 	<script type="text/javascript">
-	if(location.href.indexOf(':8000') != -1) document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
+	if (location.href.indexOf(':8000') != -1) document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
 	</script>
 	<script src="./js/plugin/jquery-1.9.1.min.js"></script>
-	<script src="./js/plugin/jquery-ui-1.9.2.custom.min.js"></script>
-	<script src="./js/plugin/jquery-ui-1.9.2.custom.min.js"></script>
+	<script src="./js/plugin/jquery-ui-1.12.1.min.js"></script>
 	<script src="./js/plugin/jquery.easing.1.3.js"></script>
 	<script src="./js/plugin/jquery.transform.js"></script>
 	<link rel="stylesheet" type="text/css" href="./css/style.css">
@@ -17,163 +16,340 @@
 
 <body>
 	<div class="blGroup">
+		<div class="boxSlider"></div>
 		<div class="guideline"></div>
 		<div class="blGroupInBox">
 			<div class="box b_bar bBar"></div>
 		</div>
 	</div>
 	<script type="text/javascript">
-	//var gamePath = Game.gamePath[Game.gameCode]; //폴더경로 변경값
-	jQuery(document).ready(function($) {
-		var YBM_GAME_TYPE05 = function(obj) {
-			this.obj = $.extend({
-				contr: {
-					left: 0,
-					right: 0,
-					drop: 32,
+	var BuildBridge = function(obj) {
+		var _this = this;
+		this.obj = $.extend(true, {
+			contr: {
+				left: 0,
+				right: 0,
+				drop: 32,
+			},
+			successLength: 8,
+			successPoint: 0,
+			waterFailHeight: 20,
+			waterHeight: 0,
+			uiSlider: '.boxSlider',
+			uiSliderLeft: 0,
+			uiSliderObj: {},
+			box: [{
+					point: 5,
+					water: .5,
+					width: 50,
 				},
-				box: ['130', '190', '160', '100', '230', '80'],
-				random: false,
-				boxAppendWrap: '.blGroupInBox',
-				boxAddClass: '.dropBox',
-				boxInitClass: '.box',
-			}, obj);
-			this.success = true;
-			this.crrtDropBox = null;
-			this.crrtBoxCount = 0;
-			this.nextDropBox = null;
-			this.prevDropBox = null;
-			this.prevDropBoxArry = [];
-			this.crrtDropBoxObj = {};
-			this.nextDropBoxObj = {};
-			this.prevDropBoxObj = {};
-			this.limitGuideLine = {
-				width : 470,
-				left : 165,
-				right : 470+165
-			};
-			this.boxCount = 0;
-			this.boxHeight = 0;
-			this.boxArry = [];
-			this.boxAppendHtml = '';
-			this.init();
+				{
+					point: 10,
+					water: 1,
+					width: 100,
+				},
+				{
+					point: 15,
+					water: 1.5,
+					width: 150,
+				},
+				{
+					point: 20,
+					water: 2,
+					width: 200,
+				},
+			],
+			random: false,
+			boxAppendWrap: '.blGroupInBox',
+			boxAddClass: '.dropBox',
+			boxInitClass: '.box',
+			boxInitBottom: '.bBar',
+		}, obj);
+		this.success = true;
+		this.successLength = 0;
+		this.crrtDropBox = null;
+		this.crrtBoxCount = 0;
+		this.nextDropBox = null;
+		this.prevDropBox = null;
+		this.prevDropBoxArry = [];
+		this.crrtDropBoxObj = {};
+		this.nextDropBoxObj = {};
+		this.prevDropBoxObj = {};
+		this.initGuideLine = function() {
+			var w = $(_this.obj.boxInitBottom).width() + _this.obj.box[0].width;
+			var l = $(_this.obj.boxInitBottom)[0].offsetLeft - (_this.obj.box[0].width / 2);
+			var r = w + l;
+			return {
+				width: w,
+				left: l,
+				right: r,
+			}
 		};
-		YBM_GAME_TYPE05.prototype = {
-			init: function(obj) {
-				this.set();
-				this.crrtDropBox = $('.bBar');
-				this.boxPrevNextFun();
-				//this.setSuccess();
-				this.setBoxHeight();
-				this.dropBind();
-			},
-			set: function() {
-				if(!this.obj.random) {
-					var _this = this;
-					this.obj.box.forEach(function(items, count) {
-						_this.boxAppendHtml += '<div class="box w' + items + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items + 'px" data-count="' + count + '" data-box-width="' + items + '"></div>';
-					});
-					$(this.obj.boxAppendWrap).append(this.boxAppendHtml+'<div class="box" style="display: none;"></div>');
-				}
-			},
-			boxPrevNextFun: function($target) {
-				var _this = this;
-				var $target = $target ? $target : this.crrtDropBox;
-				this.nextDropBox = $target.next();
-				if($target.prev().is('.box')) {
-					// this.prevDropBox = $target.prev();
-					var $prev = $target.prev();
-					this.prevDropBoxArry.push($prev);
-					console.log(this.prevDropBoxArry)
-					this.prevDropBoxArry.forEach(function(items){
-						if(!items.is(':hidden')){
-							_this.prevDropBox = items;
-							return;
-						}
-					});
-					this.prevDropBoxObj = this.setBoxPosition(this.prevDropBox);
-				}
-				this.nextDropBoxObj = this.setBoxPosition(this.nextDropBox);
-				this.crrtDropBoxObj = this.setBoxPosition(this.crrtDropBox);
-			},
-			setBoxPosition: function($target) {
-				var $target = $target ? $target : this.crrtDropBox;
-				var pos = {
-					w: $target.outerWidth(),
-					h: $target.outerHeight(),
-					x: $target[0].offsetLeft,
-					y: $target[0].offsetTop,
-					r: $target.outerWidth() + $target[0].offsetLeft,
-				};
-				return {
-					width: pos.w,
-					height: pos.h,
-					left: pos.x,
-					top: pos.y,
-					right: pos.r,
-				};
-			},
-			setSuccess: function(bo) {
-				if(this.crrtDropBoxObj.left > this.limitGuideLine.left && this.crrtDropBoxObj.right < this.limitGuideLine.right) {
-					this.success = true;
-					this.setLimitGuideLine(this.crrtDropBoxObj, this.nextDropBoxObj);
-				} else {
-					this.success = false;
-					this.setLimitGuideLine(this.prevDropBoxObj, this.nextDropBoxObj);
-				}
-			},
-			setLimitGuideLine: function(prev, crrt) {
-				var w = prev.width + crrt.width;
-				var x = prev.left - (crrt.width / 2);
-				var wx = w + x;
-				this.limitGuideLine = {
-					width: w,
-					left: x,
-					right: wx,
-				};
+		this.limitGuideLine = {
+			width: _this.initGuideLine().width,
+			left: _this.initGuideLine().left,
+			right: _this.initGuideLine().right
+		};
+		this.boxCount = 0;
+		this.boxLength = 0;
+		this.boxHeight = 0;
+		this.boxHistroyArry = [];
+		this.boxAppendHtml = '';
+		this.init();
+	};
+	BuildBridge.prototype = {
+		init: function(obj) {
+			if (location.href.indexOf('localhost') != -1 ||location.href.indexOf('github') != -1 ) {
 				$('.guideline').stop().animate({
 					'width': this.limitGuideLine.width,
 					'left': this.limitGuideLine.left,
 				});
-			},
-			setBoxHeight: function() {
-				if(this.success) {
-					this.boxHeight += this.setBoxPosition().height;
-				}
-			},
-			dropBind: function() {
-				var _this = this;
-				$(document).keyup(function() {
-					if(event.keyCode == _this.obj.contr.drop) {
-						_this.crrtDropBox = $(_this.obj.boxAddClass + '[data-count=' + _this.boxCount + ']');
-						_this.boxPrevNextFun();
-						_this.setSuccess();
-						_this.setBoxHeight();
-						_this.dropMove();
+			}
+			this.set().slider();
+			this.set().create();
+			this.crrtDropBox = $(this.obj.boxInitBottom);
+			this.boxPrevNextFun();
+			this.setBoxHeight();
+			this.dropBind();
+		},
+		set: function() {
+			var _this = this;
+			return {
+				create: function() {
+					if (!_this.obj.random) {
+						_this.obj.box.forEach(function(items) {
+							_this.boxAppendHtml += '<div class="box w' + items.width + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items.width + 'px; left: ' + _this.obj.uiSliderLeft + 'px;" data-count="' + _this.boxLength + '" data-box-width="' + items.width + '"></div>';
+							_this.boxLength++;
+						});
+						$(_this.obj.boxAppendWrap).append(_this.boxAppendHtml);
+						_this.boxAppendHtml = '';
+					}
+				},
+				slider: function() {
+					$(_this.obj.uiSlider).slider($.extend(true, {
+						slide: function(e, el) {
+							_this.obj.uiSliderLeft = el.handle.offsetLeft;
+							$(_this.obj.boxAddClass).not('.drop').css('left', _this.obj.uiSliderLeft);
+
+						},
+					}, _this.obj.uiSliderObj));
+				},
+			};
+		},
+		boxPrevNextFun: function($target) {
+			var _this = this;
+			var $target = $target ? $target : this.crrtDropBox;
+			if (!$target.next().is('.box')) {
+				this.set().create();
+			}
+			this.nextDropBox = $target.next();
+			if ($target.prev().is('.box')) {
+				var $prev = $target.prev();
+				this.prevDropBoxArry.push($prev);
+				this.prevDropBoxArry.forEach(function(items) {
+					if (!items.is('.false')) {
+						_this.prevDropBox = items;
+						return;
 					}
 				});
-			},
-			dropMove: function() {
-				this.crrtDropBox.css({
-					'top': $(document).height() - this.boxHeight
-				});
-				if(!this.success) {
-					 // this.crrtDropBox.animate({ 'opacity': 0 }, { 'complete': function() { $(this).hide(); } });
-					 this.crrtDropBox.hide();
+				this.prevDropBoxObj = this.setBoxPosition(this.prevDropBox);
+				this.boxHistroyArry.push(this.prevDropBoxObj);
+			}
+			this.nextDropBoxObj = this.setBoxPosition(this.nextDropBox);
+			this.crrtDropBoxObj = this.setBoxPosition(this.crrtDropBox);
+			this.nextDropBox.css({
+				'visibility': 'visible',
+				'margin-left': -(this.nextDropBoxObj.width / 2)
+			});
+		},
+		setBoxPosition: function($target) {
+			var $target = $target ? $target : this.crrtDropBox;
+			var pos = {
+				w: $target.outerWidth(),
+				h: $target.outerHeight(),
+				x: $target[0].offsetLeft,
+				y: $target[0].offsetTop,
+				r: $target.outerWidth() + $target[0].offsetLeft,
+			};
+			return {
+				width: pos.w,
+				height: pos.h,
+				left: pos.x,
+				top: pos.y,
+				right: pos.r,
+			};
+		},
+		setSuccess: function() {
+			var _this = this;
+			return {
+				cls01: function() { //커렌트박스가. 리밋트라인의 left 보다 크고, 리밋트라인의 right보다 작을때
+					if (_this.crrtDropBoxObj.left > _this.limitGuideLine.left && _this.crrtDropBoxObj.right < _this.limitGuideLine.right) {
+						return true;
+					} else {
+						return false;
+					}
+				},
+				cls02: function() {
+					/*
+					 * if(현재박스.width > 이전박스.너비)
+					 *	if(커렌트박스가 , 히스토리박스중 가장 너비가 작은박스의  left보다 작고, right 클때 )
+					 *else
+					 *	if(커렌트박스가 , 히스토리박스중 가장 너비가 작은박스의  left보다 크고, right 작을때)
+					 */
+					var widthArry = [];
+					_this.boxHistroyArry.forEach(function(items) {
+						widthArry.push(items.width);
+					});
+					var minWidth = Math.min.apply(null, widthArry);
+					for (var i = 0; i < _this.boxHistroyArry.length; i++) {
+						if (_this.boxHistroyArry[i].width == minWidth) {
+							var minBoxObj = _this.boxHistroyArry[i];
+							var crrtBoxObj = _this.crrtDropBoxObj;
+							if (crrtBoxObj.width > _this.prevDropBoxObj.width) {
+								if (crrtBoxObj.left < minBoxObj.left && crrtBoxObj.right > minBoxObj.right) {
+									return true;
+								} else {
+									return false;
+								}
+							} else {
+								/*if (crrtBoxObj.left > minBoxObj.left && crrtBoxObj.right < minBoxObj.right) {
+									return true;
+								} else {
+									return false;
+								}*/
+								return true;
+							}
+						}
+					}
+				},
+				cls03: function() {},
+			};
+		},
+		getSuccess: function() {
+			//if (this.setSuccess().cls01() && this.setSuccess().cls02() && this.setSuccess().cls03()) {
+			//this.setSuccess().cls01() && this.setSuccess().cls02()
+			if (this.setSuccess().cls01() && this.setSuccess().cls02()) {
+				this.success = true;
+				this.setLimitGuideLine(this.crrtDropBoxObj, this.nextDropBoxObj);
+			} else {
+				this.success = false;
+				this.setLimitGuideLine(this.prevDropBoxObj, this.nextDropBoxObj);
+			}
+			this.successCallb();
+		},
+		successCallb: function() {
+			var _this = this;
+			var crrtBoxObj = null;
+			this.obj.box.forEach(function(items) {
+				if (items.width == _this.crrtDropBoxObj.width) {
+					crrtBoxObj = {
+						point: items.point,
+						water: items.water,
+					}
 				}
-				this.boxCount++;
-			},
-			glFun: function() {
-				var clsFormat = function(nm) {
-					return nm.replace('.', '');
-				};
-				return {
-					clsFormat: clsFormat,
-				};
-			},
-		};
-		var initName = new YBM_GAME_TYPE05({});
-	});
+			});
+			if (this.success) {
+				this.successLength++;
+				this.obj.successPoint += crrtBoxObj.point;
+			}
+			this.obj.waterHeight += crrtBoxObj.water;
+		},
+		setLimitGuideLine: function(prev, crrt) {
+			var w = prev.width + crrt.width;
+			var x = prev.left - (crrt.width / 2);
+			var wx = w + x;
+			this.limitGuideLine = {
+				width: w,
+				left: x,
+				right: wx,
+			};
+			$('.guideline').stop().animate({
+				'width': this.limitGuideLine.width,
+				'left': this.limitGuideLine.left,
+			});
+		},
+		setBoxHeight: function() {
+			if (this.success) {
+				this.boxHeight += this.setBoxPosition().height;
+			}
+		},
+		dropBind: function() {
+			var _this = this;
+			$(document).keyup(function() {
+				if (event.keyCode == _this.obj.contr.drop) {
+					_this.bindCallbFun();
+				}
+			});
+		},
+		bindCallbFun: function() {
+			this.crrtDropBox = $(this.obj.boxAddClass + '[data-count=' + this.boxCount + ']');
+			this.boxPrevNextFun();
+			this.getSuccess();
+			this.setBoxHeight();
+			this.dropMove();
+			if (this.successLength == this.obj.successLength) {
+				this.finishLineGame(true);
+			} else if (this.obj.waterHeight >= this.obj.waterFailHeight) {
+				this.finishLineGame(false);
+			}
+		},
+		finishLineGame: function(bool) {
+			/*
+			 * 포인트 : this.obj.successPoint
+			 */
+			if (bool) {
+				//성공;
+			} else {
+				//실패
+			}
+		},
+		dropMove: function() {
+			this.crrtDropBox.addClass('drop').css({
+				'top': $(document).height() - this.boxHeight
+			});
+			if (!this.success) {
+				// this.crrtDropBox.animate({ 'opacity': 0 }, { 'complete': function() { $(this).hide(); } });
+				this.crrtDropBox.addClass('false').css({
+					'border-color': 'red',
+					'opacity': .2
+				});
+			}
+			this.boxCount++;
+		},
+		glFun: function() {
+			var clsFormat = function(nm) {
+				return nm.replace('.', '');
+			};
+			return {
+				clsFormat: clsFormat,
+			};
+		},
+	};
+
+	var Game = {};
+	var buildBridge = null;
+	Game.start = function(gameCode, schedIndex, seqNo, pointMax, callback) {
+		switch (gameCode) {
+			case 1001:
+				buildBridge = new BuildBridge({});
+				break;
+		}
+	}
+
+	function callback(gameCode, schedIndex, seqNo, point, errorCode, errorMessage) {
+		//임시로 저장완료 리턴.
+		return 1;
+	}
+	var divedeeper = {
+		code: 1001, //게임코드(1001~1020)
+		schedIndex: 121, // 학습일련번호 
+		seqNo: 25, // 학습내 액티비티 번호
+		pointMax: 25 //게임 최고획득점수(만점)
+	}
+
+	Game.start(divedeeper.code, divedeeper.schedIndex, divedeeper.seqNo, divedeeper.pointMax, callback);
+	//포인트 == buildBridge.obj.successPoint 
+	callback(divedeeper.code, divedeeper.schedIndex, divedeeper.seqNo, buildBridge.obj.successPoint);
 	</script>
 </body>
 
