@@ -56,6 +56,7 @@
 				<div class="shd"></div>
 			</div>
 			<div class="bl_fail blFailEl"></div>
+			<div class="blm_push blMPushBtn"></div>
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -66,6 +67,7 @@
 				left: 37,
 				right: 39,
 				drop: 32, //40
+				mDrop: '.blMPushBtn', //40
 			},
 			successLength: 8,
 			successPoint: 0,
@@ -343,6 +345,11 @@
 				if (key == _this.obj.contr.drop) {
 					_this.bindCallbFun();
 				}
+			});
+			$(this.obj.contr.mDrop).on({
+				'click' : function(){
+					_this.bindCallbFun();	
+				},
 			});
 			/*$(document).keydown(function() {
 				var key = event.keyCode;
