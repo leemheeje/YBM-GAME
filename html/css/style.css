@@ -1,5 +1,6 @@
 @charset 'utf-8';
 @import url('./base.css');
+@import url('./animate.css');
 @import url('./plugin/jquery-ui.min.css');
 html, body{height: 100%;}
 *{box-sizing: border-box;}
@@ -7,7 +8,7 @@ body{background: #282828;}
 .blgm_wrap{max-width: 1280px; padding: 50px 15px 15px 17px; margin: 0 auto; height: 720px; background: #65a9e0;}
 .blgm_in{height: 100%;  background: url(../images/backg.jpg) no-repeat left top; position: relative;  overflow: hidden;}
 .blGroup{margin: 0 auto; width: 500px; height: 100%;  position: relative;}
-.boxSlider{position: absolute; left: 0; top: 0; width: 100%;}
+.boxSlider{position: absolute; left: 0; top: 0; width: 100%; height: 10px; margin-top: -10px;}
 .blGroupInBox{width: 100%; height: 100%; position: relative;}
 .box{}
 .box.b_bar{width: 254px; height: 46px;  position: absolute; left: 50%; margin-left: -127px; bottom: 0; background: url(../images/b_bar.png) no-repeat left top;}
@@ -16,7 +17,7 @@ body{background: #282828;}
 .box02{background-image: url(../images/box10.png); height: 50px;}
 .box03{background-image: url(../images/box15.png); height: 50px;}
 .box04{background-image: url(../images/box20.png); height: 100px;}
-.dropBox{visibility: hidden;}
+.dropBox{visibility: hidden; top: 80px;}
 .blgm_sasl{position: absolute; top: 0; width: 340px; height: 190px; z-index: 1; overflow: hidden;}
 .blgm_sasl.tp01{left: 0;}
 .blgm_sasl.tp02{right: 0;}
@@ -56,7 +57,9 @@ body{background: #282828;}
 .blgm_sasl .sas_circle.active{-webkit-animation:spin 4s linear infinite; -moz-animation:spin 4s linear infinite; animation:spin 4s linear infinite;}
 .blgm_sasl.tp02 .sas_circle.active{-webkit-animation:spin2 4s linear infinite; -moz-animation:spin2 4s linear infinite; animation:spin2 4s linear infinite;}
 .blgm_water_bar{width: 88px; height: 348px; background: url(../images/water_bar.png); position: absolute; right: 65px; bottom: 30px;}
-.blgm_water{height: 356px; background: url(../images/blgm_water.png) repeat-x left top; width: 100%; position: absolute; left: 0; bottom: 0; z-index: 50;transition: all 0.2s ease-in-out; -moz-transition: all 1s ease-in-out;}
+.blgm_water{height: 356px; width: 100%; position: absolute; left: 0; bottom: 0; z-index: 50;transition: all 0.2s ease-in-out; -moz-transition: all 1s ease-in-out; padding-bottom: 50px;}
+.blgm_water_in{width: 100%; height: 100%; position: relative;}
+.water_height{width: 100%; height: 356px; background: url(../images/blgm_water.png) repeat-x left top; position: absolute; left: 0; top: 306px; transition: top 0.7s;}
 .blgm_water .water_br{position: absolute; right: 117px; top: -11px; width: 31px; height: 23px; background: url(../images/water_br.png)}
 .blgm_lib{width: 640px; position: absolute;  bottom: 0; height: 465px; z-index: 2;}
 .blgm_lib .lib_tp{width: 100%; height: 65px; background: url(../images/lib_tp.png) repeat-x left top; }
@@ -68,19 +71,34 @@ body{background: #282828;}
 .blgm_lib.tp02 .shd{margin-left: 0;}
 .blgm_lib.tp01 .shd:after{right: -165px; background-image: url(../images/shd_after.png) ;}
 .blgm_lib.tp02 .shd:after{height: 467px; left: -165px; background-image: url(../images/shd_after02.png) ;}
+.bl_point{}
+.bl_point .bl_point_in{display: block; width: 177px; height: 77px; background: no-repeat left top; position: absolute; right: -50px; top: 380px; -webkit-animation: point .7s linear; opacity: 0;}
+.bl_point .bl_point_in.po5{background-image: url(../images/po05.png);}
+.bl_point .bl_point_in.po10{background-image: url(../images/po10.png);}
+.bl_point .bl_point_in.po15{background-image: url(../images/po15.png);}
+.bl_point .bl_point_in.po20{background-image: url(../images/po20.png);}
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 @-moz-keyframes spin2 { 100% { -moz-transform: rotate(-360deg); } }
 @-webkit-keyframes spin2 { 100% { -webkit-transform: rotate(-360deg); } }
 @keyframes spin2 { 100% { -webkit-transform: rotate(-360deg); transform:rotate(-360deg); } }
+@keyframes point{
+	0%{
+		opacity : 1;
+	}
+	100% {
+		top: 370px;
+		opacity : 0;	
+		display: none;
+	}
+}
+.bl_fail{display: none; width: 100%; height: 100%; background: url(../images/fail.png) no-repeat center 20px; position: absolute; left: 0; top: 0; z-index: 100;}
+.ui-slider-horizontal .ui-slider-handle:after{content: ''; width: 194px; height: 161px; background: url(../images/trn_ept.png) no-repeat center center; position: absolute; left: -100px; top: -35px;}
+.ui-slider-horizontal .ui-slider-handle:focus{outline: none;}
 
 
 
 
 
-
-
-
-
-.guideline{position: absolute; left: 165px; width: 470px; height: 100%; background: ; opacity: .1; top: 0; z-index: 1000; pointer-events: none;}
+.guideline{position: absolute; left: 165px; width: 470px; height: 100%; background: #fff; opacity: .1; top: 0; z-index: 1000; pointer-events: none;}

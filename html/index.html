@@ -22,18 +22,20 @@
 			<div class="blgm_sasl tp01">
 				<span class="sas sas01"></span>
 				<span class="sas sas02"></span>
-				<div class="sas_circle  active"></div>
+				<div class="sas_circle "></div>
 			</div>
 			<div class="blgm_lib tp01">
 				<div class="lib_tp"></div>
 				<div class="shd"></div>
 			</div>
 			<div class="blGroup">
-				<input type="hidden" name="sliderValue">
 				<div class="boxSlider"></div>
 				<div class="guideline"></div>
 				<div class="blGroupInBox">
 					<div class="box b_bar bBar"></div>
+				</div>
+				<div class="bl_point blPoint">
+					<span class="bl_point_in"></span>
 				</div>
 			</div>
 			<div class="blgm_sasl tp02">
@@ -43,12 +45,17 @@
 			</div>
 			<div class="blgm_water_bar"></div>
 			<div class="blgm_water">
-				<div class="water_br"></div>
+				<div class="blgm_water_in waterHeightWrap">
+					<div class="water_height waterHeight">
+						<div class="water_br"></div>
+					</div>
+				</div>
 			</div>
 			<div class="blgm_lib tp02">
 				<div class="lib_tp"></div>
 				<div class="shd"></div>
 			</div>
+			<div class="bl_fail blFailEl"></div>
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -62,8 +69,12 @@
 			},
 			successLength: 8,
 			successPoint: 0,
+			pointViewEl: '.blPoint',
 			waterFailHeight: 20,
 			waterHeight: 0,
+			waterHeightWrap: '.waterHeightWrap',
+			waterHeightEl: '.waterHeight',
+			gameFailViewEl: '.blFailEl',
 			uiSlider: '.boxSlider',
 			uiSliderLeft: 0,
 			uiSliderObj: {},
@@ -290,8 +301,21 @@
 			if (this.success) {
 				this.successLength++;
 				this.obj.successPoint += crrtBoxObj.point;
+				this.sucsCallbFun(crrtBoxObj.point);
 			}
 			this.obj.waterHeight += crrtBoxObj.water;
+			this.waterHeightFun();
+		},
+		sucsCallbFun: function(crrtpoi) {
+			$(this.obj.pointViewEl).append('<span class="bl_point_in po' + crrtpoi + '"></span>');
+		},
+		waterHeightFun: function() {
+			var $maxHehight = $(this.obj.waterHeightWrap).height();
+			var $top = $maxHehight - (($maxHehight * this.obj.waterHeight) / this.obj.waterFailHeight);
+			var $val = $top > 0 ? $top : 0;
+			$(this.obj.waterHeightEl).css({
+				'top': $val
+			});
 		},
 		setLimitGuideLine: function(prev, crrt) {
 			var w = prev.width + crrt.width;
@@ -316,7 +340,6 @@
 			var _this = this;
 			$(document).keyup(function() {
 				var key = event.keyCode;
-				console.log(_this)
 				if (key == _this.obj.contr.drop) {
 					_this.bindCallbFun();
 				}
@@ -341,9 +364,7 @@
 			this.getSuccess();
 			this.setBoxHeight();
 			this.dropMove();
-			if (this.successLength == this.obj.successLength) {
-				this.finishLineGame(true);
-			} else if (this.obj.waterHeight >= this.obj.waterFailHeight) {
+			if (this.obj.waterHeight >= this.obj.waterFailHeight) {
 				this.finishLineGame(false);
 			}
 		},
@@ -352,16 +373,22 @@
 			 * 포인트 : this.obj.successPoint
 			 */
 			if (bool) {
-				//성공;
+				alert('성공')
 			} else {
-				//실패
+				$(this.obj.gameFailViewEl).show().addClass('animated slideInDown');
 			}
 		},
 		dropMove: function() {
+			var _this = this;
 			this.crrtDropBox.addClass('drop').animate({
 				'top': $(this.obj.boxAppendWrap).height() - this.boxHeight
 			}, this.aniCallb({
 				'duration': 300,
+				'complete': function() {
+					if (_this.successLength == _this.obj.successLength) {
+						_this.finishLineGame(true);
+					}
+				},
 			}));
 			if (!this.success) {
 				this.crrtDropBox.addClass('false').animate({
