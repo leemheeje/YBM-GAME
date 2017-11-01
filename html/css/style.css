@@ -17,7 +17,6 @@ body{background: #282828;}
 .box02{background-image: url(../images/box10.png); height: 50px;}
 .box03{background-image: url(../images/box15.png); height: 50px;}
 .box04{background-image: url(../images/box20.png); height: 100px;}
-.dropBox{visibility: hidden; top: 80px;}
 .blgm_sasl{position: absolute; top: 0; width: 340px; height: 190px; z-index: 1; overflow: hidden;}
 .blgm_sasl.tp01{left: 0;}
 .blgm_sasl.tp02{right: 0;}
@@ -57,9 +56,9 @@ body{background: #282828;}
 .blgm_sasl .sas_circle.active{-webkit-animation:spin 4s linear infinite; -moz-animation:spin 4s linear infinite; animation:spin 4s linear infinite;}
 .blgm_sasl.tp02 .sas_circle.active{-webkit-animation:spin2 4s linear infinite; -moz-animation:spin2 4s linear infinite; animation:spin2 4s linear infinite;}
 .blgm_water_bar{width: 88px; height: 348px; background: url(../images/water_bar.png); position: absolute; right: 65px; bottom: 30px;}
-.blgm_water{height: 356px; width: 100%; position: absolute; left: 0; bottom: 0; z-index: 50;transition: all 0.2s ease-in-out; -moz-transition: all 1s ease-in-out; padding-bottom: 50px;}
+.blgm_water{height: 356px; width: 100%; position: absolute; left: 0; bottom: 0; z-index: 50;transition: all 0.2s ease-in-out; -moz-transition: all 1s ease-in-out; padding-bottom: 202px;}
 .blgm_water_in{width: 100%; height: 100%; position: relative;}
-.water_height{width: 100%; height: 356px; background: url(../images/blgm_water.png) repeat-x left top; position: absolute; left: 0; top: 306px; transition: top 0.7s;}
+.water_height{width: 100%; height: 356px; background: url(../images/blgm_water.png) repeat-x left top; position: absolute; left: 0; top: 153px; transition: top 0.7s;}
 .blgm_water .water_br{position: absolute; right: 117px; top: -11px; width: 31px; height: 23px; background: url(../images/water_br.png)}
 .blgm_lib{width: 640px; position: absolute;  bottom: 0; height: 465px; z-index: 2;}
 .blgm_lib .lib_tp{width: 100%; height: 65px; background: url(../images/lib_tp.png) repeat-x left top; }
@@ -94,11 +93,16 @@ body{background: #282828;}
 	}
 }
 .bl_fail{display: none; width: 100%; height: 100%; background: url(../images/fail.png) no-repeat center 20px; position: absolute; left: 0; top: 0; z-index: 100;}
-.ui-slider-horizontal .ui-slider-handle:after{content: ''; width: 194px; height: 161px; background: url(../images/trn_ept.png) no-repeat center center; position: absolute; left: -100px; top: -35px;}
+.dropBox{visibility: hidden; top: 80px;}
+.ui-slider-horizontal .ui-slider-handle{cursor: e-resize;}
+.ui-slider-horizontal .ui-slider-handle:after{content: ''; width: 194px; height: 238px; background: url(../images/trn_ept.png) no-repeat center center; position: absolute; left: -100px; top: -70px;}
 .ui-slider-horizontal .ui-slider-handle:focus{outline: none;}
+.boxSlider[data-type="75"].ui-slider-horizontal .ui-slider-handle:after{background-image: url(../images/trn_75.png); width: 131px; left: -65px;}
+.boxSlider[data-type="111"].ui-slider-horizontal .ui-slider-handle:after{background-image: url(../images/trn_111.png); width: 168px; left: -84px;}
+.boxSlider[data-type="155"].ui-slider-horizontal .ui-slider-handle:after{background-image: url(../images/trn_155.png); width: 194px; left: -97px;}
+.boxSlider[data-type="202"].ui-slider-horizontal .ui-slider-handle:after{background-image: url(../images/trn_202.png); width: 240px; left: -120px; top: -48px;}
 .blm_push{position: absolute; right: 20px; bottom: 20px; width: 100px; height: 100px; background: #fff; opacity: .5; border-radius: 30px; z-index: 50;}
 
 
 
-
-.guideline{position: absolute; left: 165px; width: 470px; height: 100%; background: #fff; opacity: .1; top: 0; z-index: 1000; pointer-events: none;}
+.guideline{position: absolute; left: 165px; width: 470px; height: 100%; background: ; opacity: .1; top: 0; z-index: 1000; pointer-events: none;}

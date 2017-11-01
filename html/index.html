@@ -18,7 +18,7 @@
 
 <body>
 	<div class="blgm_wrap">
-		<div class="blgm_in">
+		<div class="blgm_in animated">
 			<div class="blgm_sasl tp01">
 				<span class="sas sas01"></span>
 				<span class="sas sas02"></span>
@@ -66,13 +66,13 @@
 			contr: {
 				left: 37,
 				right: 39,
-				drop: 32, //40
-				mDrop: '.blMPushBtn', //40
+				drop: 32,
+				mDrop: '.blMPushBtn',
 			},
-			successLength: 8,
+			successLength: 0,
 			successPoint: 0,
 			pointViewEl: '.blPoint',
-			waterFailHeight: 20,
+			waterFailHeight: 0,
 			waterHeight: 0,
 			waterHeightWrap: '.waterHeightWrap',
 			waterHeightEl: '.waterHeight',
@@ -145,11 +145,11 @@
 	};
 	BuildBridge.prototype = {
 		init: function(obj) {
-			if (location.href.indexOf('localhost') != -1 || location.href.indexOf('github') != -1) {
+			if (location.href.indexOf('localhost:8000') != -1 || location.href.indexOf('github') != -1) {
 				$('.guideline').stop().animate({
 					'width': this.limitGuideLine.width,
 					'left': this.limitGuideLine.left,
-				});
+				}).css('background-color', '#fff');
 			}
 			this.set().slider();
 			this.set().create();
@@ -212,9 +212,9 @@
 			this.nextDropBoxObj = this.setBoxPosition(this.nextDropBox);
 			this.crrtDropBoxObj = this.setBoxPosition(this.crrtDropBox);
 			this.nextDropBox.css({
-				'visibility': 'visible',
 				'margin-left': -(this.nextDropBoxObj.width / 2)
 			});
+			$(this.obj.uiSlider).attr('data-type', '' + this.nextDropBoxObj.width);
 		},
 		setBoxPosition: function($target) {
 			var $target = $target ? $target : this.crrtDropBox;
@@ -310,6 +310,7 @@
 		},
 		sucsCallbFun: function(crrtpoi) {
 			$(this.obj.pointViewEl).append('<span class="bl_point_in po' + crrtpoi + '"></span>');
+
 		},
 		waterHeightFun: function() {
 			var $maxHehight = $(this.obj.waterHeightWrap).height();
@@ -347,20 +348,10 @@
 				}
 			});
 			$(this.obj.contr.mDrop).on({
-				'click' : function(){
-					_this.bindCallbFun();	
+				'click': function() {
+					_this.bindCallbFun();
 				},
 			});
-			/*$(document).keydown(function() {
-				var key = event.keyCode;
-				var sliderValue = _this.set().slider().slider('value');
-				if (key == _this.obj.contr.left) {
-					sliderValue--;
-				} else if (key == _this.obj.contr.right) {
-					sliderValue++;
-				}
-				_this.set().slider().slider('value', sliderValue);
-			});*/
 			$(document).click(function() {
 				$('.ui-slider-handle').focus();
 			}).click();
@@ -387,7 +378,9 @@
 		},
 		dropMove: function() {
 			var _this = this;
-			this.crrtDropBox.addClass('drop').animate({
+			this.crrtDropBox.css({
+				'visibility': 'visible',
+			}).addClass('drop').animate({
 				'top': $(this.obj.boxAppendWrap).height() - this.boxHeight
 			}, this.aniCallb({
 				'duration': 300,
@@ -423,7 +416,14 @@
 	Game.start = function(gameCode, schedIndex, seqNo, pointMax, callback) {
 		switch (gameCode) {
 			case 1001:
-				buildBridge = new BuildBridge({});
+				buildBridge = new BuildBridge({
+					contr: {
+						drop: 40,
+						mDrop: '.blMPushBtn',
+					},
+					successLength: 8,
+					waterFailHeight: 20,
+				});
 				break;
 		}
 	}
