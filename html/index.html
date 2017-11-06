@@ -41,7 +41,7 @@
 			<div class="blgm_sasl tp02">
 				<span class="sas sas03"></span>
 				<span class="sas sas04"></span>
-				<div class="sas_circle active"></div>
+				<div class="sas_circle"></div>
 			</div>
 			<div class="blgm_water_bar"></div>
 			<div class="blgm_water">
@@ -85,14 +85,12 @@
 					point: 5,
 					water: .5,
 					width: 75,
-				},
-				{
+				}, {
 					clsnm: 'box02',
 					point: 10,
 					water: 1,
 					width: 111,
-				},
-				{
+				}, {
 					clsnm: 'box03',
 					point: 15,
 					water: 1.5,
@@ -145,7 +143,7 @@
 	};
 	BuildBridge.prototype = {
 		init: function(obj) {
-			if (location.href.indexOf('localhost:8000') != -1 || location.href.indexOf('github') != -1) {
+			if (location.href.indexOf('localhost') != -1 || location.href.indexOf('github') != -1) {
 				$('.guideline').stop().animate({
 					'width': this.limitGuideLine.width,
 					'left': this.limitGuideLine.left,
@@ -167,7 +165,7 @@
 							_this.boxAppendHtml += '<div class="box ' + items.clsnm + ' w' + items.width + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items.width + 'px; left: ' + _this.obj.uiSliderLeft + 'px;" data-count="' + _this.boxLength + '" data-box-width="' + items.width + '"></div>';
 							_this.boxLength++;
 						});
-						$(_this.obj.boxAppendWrap).append(_this.boxAppendHtml);
+						$(_this.obj.boxAppendWrap).append(_this.boxAppendHtml + '<div class="box"></div>');
 						_this.boxAppendHtml = '';
 					}
 				},
@@ -371,7 +369,7 @@
 			 * 포인트 : this.obj.successPoint
 			 */
 			if (bool) {
-				alert('성공')
+				alert('성공 획득포인=' + this.obj.successPoint)
 			} else {
 				$(this.obj.gameFailViewEl).show().addClass('animated slideInDown');
 			}
@@ -418,7 +416,7 @@
 			case 1001:
 				buildBridge = new BuildBridge({
 					contr: {
-						drop: 40,
+						//drop: 40,
 						mDrop: '.blMPushBtn',
 					},
 					successLength: 8,

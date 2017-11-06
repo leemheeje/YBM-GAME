@@ -55,21 +55,25 @@ body{background: #282828;}
 .blgm_sasl.tp02 .sas_circle{right: auto; left: 0;}
 .blgm_sasl .sas_circle.active{-webkit-animation:spin 4s linear infinite; -moz-animation:spin 4s linear infinite; animation:spin 4s linear infinite;}
 .blgm_sasl.tp02 .sas_circle.active{-webkit-animation:spin2 4s linear infinite; -moz-animation:spin2 4s linear infinite; animation:spin2 4s linear infinite;}
-.blgm_water_bar{width: 88px; height: 348px; background: url(../images/water_bar.png); position: absolute; right: 65px; bottom: 30px;}
+.blgm_water_bar{width: 88px; height: 348px; background: url(../images/water_bar.png); position: absolute; right: 65px; bottom: 30px; z-index: 3;}
 .blgm_water{height: 356px; width: 100%; position: absolute; left: 0; bottom: 0; z-index: 50;transition: all 0.2s ease-in-out; -moz-transition: all 1s ease-in-out; padding-bottom: 202px;}
 .blgm_water_in{width: 100%; height: 100%; position: relative;}
 .water_height{width: 100%; height: 356px; background: url(../images/blgm_water.png) repeat-x left top; position: absolute; left: 0; top: 153px; transition: top 0.7s;}
 .blgm_water .water_br{position: absolute; right: 117px; top: -11px; width: 31px; height: 23px; background: url(../images/water_br.png)}
-.blgm_lib{width: 640px; position: absolute;  bottom: 0; height: 465px; z-index: 2;}
-.blgm_lib .lib_tp{width: 100%; height: 65px; background: url(../images/lib_tp.png) repeat-x left top; }
+.blgm_lib{width: 374px; position: absolute;  bottom: 0; height: 465px; z-index: 2;}
+.blgm_lib .lib_tp{width: 100%; height: 65px; background: url(../images/lib_tp.png) repeat-x left top;  position: relative; z-index: 1;}
+.blgm_lib .lib_tp:before{content: ''; width: 390px; height: 417px; position: absolute; top: 100%;}
+.blgm_lib.tp01 .lib_tp:before{background: url(../images/lib_l.png); left: 0;}
+.blgm_lib.tp02 .lib_tp:before{background: url(../images/lib_r.png); right: 0;}
 .blgm_lib .shd{display: block; height: 100%;  background: url(../images/shd.png) repeat-x; position: relative;}
+.blgm_lib.tp02 .shd{ background-image: url(../images/shd02.png); margin-top: -65px;}
 .blgm_lib .shd:after{content: ''; width: 165px; height: 100%; position: absolute; top: 0; background: left top;}
-.blgm_lib.tp01{left: -266px;}
-.blgm_lib.tp02{right: -266px;}
+.blgm_lib.tp01{left: 0;}
+.blgm_lib.tp02{right: 0;}
 .blgm_lib.tp01 .shd{margin-right: 165px;}
 .blgm_lib.tp02 .shd{margin-left: 0;}
 .blgm_lib.tp01 .shd:after{right: -165px; background-image: url(../images/shd_after.png) ;}
-.blgm_lib.tp02 .shd:after{height: 467px; left: -165px; background-image: url(../images/shd_after02.png) ;}
+.blgm_lib.tp02 .shd:after{height: 466px; left: -165px; background-image: url(../images/shd_after02.png) ; background-position: right top;}
 .bl_point{}
 .bl_point .bl_point_in{display: block; width: 177px; height: 77px; background: no-repeat left top; position: absolute; right: -50px; top: 380px; -webkit-animation: point .7s linear; opacity: 0;}
 .bl_point .bl_point_in.po5{background-image: url(../images/po05.png);}
