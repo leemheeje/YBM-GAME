@@ -154,7 +154,7 @@
 				$('.guideline').stop().animate({
 					'width': this.limitGuideLine.width,
 					'left': this.limitGuideLine.left,
-				}).css('background-color', '#fff');
+				})//.css('background-color', '#fff');
 			}
 			this.set().slider();
 			this.set().create();
@@ -292,11 +292,39 @@
 						}
 					}
 				},
-				cls03: function() {},
+				cls03: function() {
+					//현재박스의 중심값이 히스토리 박스의 좌(x),우(r) 보다 작을때 ? true : false
+					var crrtCent = _this.crrtDropBoxObj.left + (_this.crrtDropBoxObj.width / 2);
+					var lr = {
+						left: [],
+						right: [],
+					};
+					var maxLeft = 0;
+					var minRight = 0;
+					_this.boxHistroyArry.forEach(function(items) {
+						lr.left.push(items.left);
+						lr.right.push(items.right);
+					});
+
+					maxLeft = Math.max.apply(null, lr.left);
+					minRight = Math.min.apply(null, lr.right);
+					/*console.log('maxLeft=='+maxLeft)
+					console.log('minRight=='+minRight)
+					console.log('crrtCent=='+crrtCent)*/
+					if (crrtCent < minRight && crrtCent > maxLeft) {
+						return true;
+					} else {
+						return false;
+					}
+				},
 			};
 		},
 		getSuccess: function() {
-			if (this.setSuccess().cls01() && this.setSuccess().cls02()) {
+			console.log(this.setSuccess().cls01())
+			console.log(this.setSuccess().cls02())
+			console.log(this.setSuccess().cls03())
+			console.log('//////////////////////////')
+			if (this.setSuccess().cls01() && this.setSuccess().cls02()&&this.setSuccess().cls03()) {
 				this.success = true;
 				this.setLimitGuideLine(this.crrtDropBoxObj, this.nextDropBoxObj);
 			} else {
@@ -412,7 +440,7 @@
 			}).addClass('drop').animate({
 				'top': $(this.obj.boxAppendWrap).height() - this.boxHeight
 			}, this.aniCallb({
-				'duration': 300,
+				'duration': 700,
 				'complete': function() {
 					if (_this.successLength >= _this.obj.successLength) {
 						_this.finishLineGame(true);
