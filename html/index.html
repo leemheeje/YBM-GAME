@@ -154,7 +154,7 @@
 				$('.guideline').stop().animate({
 					'width': this.limitGuideLine.width,
 					'left': this.limitGuideLine.left,
-				})//.css('background-color', '#fff');
+				}) //.css('background-color', '#fff');
 			}
 			this.set().slider();
 			this.set().create();
@@ -183,10 +183,10 @@
 							_this.boxGetArry[ran] = temp;
 						}
 					}
-					_this.boxGetArry.forEach(function(items) {
-						_this.boxAppendHtml += '<div class="box ' + items.clsnm + ' w' + items.width + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items.width + 'px; left: ' + _this.obj.uiSliderLeft + 'px;" data-count="' + _this.boxLength + '" data-box-width="' + items.width + '"></div>';
+					for (var i = 0; i < _this.boxGetArry.length; i++) {
+						_this.boxAppendHtml += '<div class="box ' + _this.boxGetArry[i].clsnm + ' w' + _this.boxGetArry[i].width + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + _this.boxGetArry[i].width + 'px; left: ' + _this.obj.uiSliderLeft + 'px;" data-count="' + _this.boxLength + '" data-box-width="' + _this.boxGetArry[i].width + '"></div>';
 						_this.boxLength++;
-					});
+					}
 					$(_this.obj.boxAppendWrap).append(_this.boxAppendHtml + '<div class="box"></div>');
 					_this.boxAppendHtml = '';
 				},
@@ -267,9 +267,9 @@
 					 *	if(커렌트박스가 , 히스토리박스중 가장 너비가 작은박스의  left보다 크고, right 작을때)
 					 */
 					var widthArry = [];
-					_this.boxHistroyArry.forEach(function(items) {
-						widthArry.push(items.width);
-					});
+					for (var i = 0; i < _this.boxHistroyArry.length; i++) {
+						widthArry.push(_this.boxHistroyArry[i].width);
+					}
 					var minWidth = Math.min.apply(null, widthArry);
 					for (var i = 0; i < _this.boxHistroyArry.length; i++) {
 						if (_this.boxHistroyArry[i].width == minWidth) {
@@ -282,11 +282,6 @@
 									return false;
 								}
 							} else {
-								/*if (crrtBoxObj.left > minBoxObj.left && crrtBoxObj.right < minBoxObj.right) {
-									return true;
-								} else {
-									return false;
-								}*/
 								return true;
 							}
 						}
@@ -295,22 +290,18 @@
 				cls03: function() {
 					//현재박스의 중심값이 히스토리 박스의 좌(x),우(r) 보다 작을때 ? true : false
 					var crrtCent = _this.crrtDropBoxObj.left + (_this.crrtDropBoxObj.width / 2);
+					var maxLeft = 0;
+					var minRight = 0;
 					var lr = {
 						left: [],
 						right: [],
 					};
-					var maxLeft = 0;
-					var minRight = 0;
-					_this.boxHistroyArry.forEach(function(items) {
-						lr.left.push(items.left);
-						lr.right.push(items.right);
-					});
-
+					for (var i = 0; i < _this.boxHistroyArry.length; i++) {
+						lr.left.push(_this.boxHistroyArry[i].left);
+						lr.right.push(_this.boxHistroyArry[i].right);
+					}
 					maxLeft = Math.max.apply(null, lr.left);
 					minRight = Math.min.apply(null, lr.right);
-					/*console.log('maxLeft=='+maxLeft)
-					console.log('minRight=='+minRight)
-					console.log('crrtCent=='+crrtCent)*/
 					if (crrtCent < minRight && crrtCent > maxLeft) {
 						return true;
 					} else {
@@ -320,11 +311,7 @@
 			};
 		},
 		getSuccess: function() {
-			console.log(this.setSuccess().cls01())
-			console.log(this.setSuccess().cls02())
-			console.log(this.setSuccess().cls03())
-			console.log('//////////////////////////')
-			if (this.setSuccess().cls01() && this.setSuccess().cls02()&&this.setSuccess().cls03()) {
+			if (this.setSuccess().cls01() && this.setSuccess().cls02() && this.setSuccess().cls03()) {
 				this.success = true;
 				this.setLimitGuideLine(this.crrtDropBoxObj, this.nextDropBoxObj);
 			} else {
@@ -336,14 +323,14 @@
 		successCallb: function() {
 			var _this = this;
 			var crrtBoxObj = null;
-			this.obj.box.forEach(function(items) {
-				if (items.width == _this.crrtDropBoxObj.width) {
+			for (var i = 0; i < _this.obj.box.length; i++) {
+				if (_this.obj.box[i].width == _this.crrtDropBoxObj.width) {
 					crrtBoxObj = {
-						point: items.point,
-						water: items.water,
+						point: _this.obj.box[i].point,
+						water: _this.obj.box[i].water,
 					}
 				}
-			});
+			}
 			if (this.success) {
 				if (crrtBoxObj.water == 2) {
 					this.successLength += 2;
@@ -426,12 +413,15 @@
 			}
 		},
 		finishLineGame: function(bool) {
+			this.sucsCallbFun().point();
 			if (bool) {
-				this.sucsCallbFun().point();
-				alert('성공 획득포인=' + this.gamePoint)
+				alert('획득포인=' + this.gamePoint)
 			} else {
 				$(this.obj.gameFailViewEl).show().addClass('animated slideInDown');
+				alert('획득포인=' + this.gamePoint)
 			}
+			$(document).off('keyup');
+			$(this.obj.contr.mDrop).off('click');
 		},
 		dropMove: function() {
 			var _this = this;
