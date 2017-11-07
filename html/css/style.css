@@ -58,7 +58,7 @@ body{background: #282828;}
 .blgm_water_bar{width: 88px; height: 348px; background: url(../images/water_bar.png); position: absolute; right: 65px; bottom: 30px; z-index: 3;}
 .blgm_water{height: 356px; width: 100%; position: absolute; left: 0; bottom: 0; z-index: 50;transition: all 0.2s ease-in-out; -moz-transition: all 1s ease-in-out; padding-bottom: 202px;}
 .blgm_water_in{width: 100%; height: 100%; position: relative;}
-.water_height{width: 100%; height: 356px; background: url(../images/blgm_water.png) repeat-x left top; position: absolute; left: 0; top: 153px; transition: top 0.7s;}
+.water_height{width: 100%; height: 356px; background: url(../images/blgm_water.png) repeat-x left top; position: absolute; left: 0; top: 154px; transition: top 0.7s;}
 .blgm_water .water_br{position: absolute; right: 117px; top: -11px; width: 31px; height: 23px; background: url(../images/water_br.png)}
 .blgm_lib{width: 374px; position: absolute;  bottom: 0; height: 465px; z-index: 2;}
 .blgm_lib .lib_tp{width: 100%; height: 65px; background: url(../images/lib_tp.png) repeat-x left top;  position: relative; z-index: 1;}

@@ -71,8 +71,11 @@
 			},
 			successLength: 0,
 			successPoint: 0,
+			successMaxPoint: 25,
+			successPointRound: true,
 			pointViewEl: '.blPoint',
-			waterFailHeight: 0,
+			waterFailHeight: 20,
+			waterInitHeight: 10,
 			waterHeight: 0,
 			waterHeightWrap: '.waterHeightWrap',
 			waterHeightEl: '.waterHeight',
@@ -80,6 +83,7 @@
 			uiSlider: '.boxSlider',
 			uiSliderLeft: 0,
 			uiSliderObj: {},
+			boxArry: [4, 3, 1, 2],
 			box: [{
 					clsnm: 'box01',
 					point: 5,
@@ -91,19 +95,19 @@
 					water: 1,
 					width: 111,
 				}, {
+					clsnm: 'box04',
+					point: 20,
+					water: 2,
+					width: 202,
+				}, {
 					clsnm: 'box03',
 					point: 15,
 					water: 1.5,
 					width: 155,
 				},
-				{
-					clsnm: 'box04',
-					point: 20,
-					water: 2,
-					width: 202,
-				},
+
 			],
-			random: false,
+			random: true,
 			boxAppendWrap: '.blGroupInBox',
 			boxAddClass: '.dropBox',
 			boxInitClass: '.box',
@@ -119,6 +123,7 @@
 		this.crrtDropBoxObj = {};
 		this.nextDropBoxObj = {};
 		this.prevDropBoxObj = {};
+		this.boxGetArry = [];
 		this.initGuideLine = function() {
 			var w = $(_this.obj.boxInitBottom).width() + _this.obj.box[0].width;
 			var l = $(_this.obj.boxInitBottom)[0].offsetLeft - (_this.obj.box[0].width / 2);
@@ -139,6 +144,8 @@
 		this.boxHeight = 0;
 		this.boxHistroyArry = [];
 		this.boxAppendHtml = '';
+		this.dropBoxPoint = 0;
+		this.gamePoint = 0;
 		this.init();
 	};
 	BuildBridge.prototype = {
@@ -160,14 +167,28 @@
 			var _this = this;
 			return {
 				create: function() {
-					if (!_this.obj.random) {
-						_this.obj.box.forEach(function(items) {
-							_this.boxAppendHtml += '<div class="box ' + items.clsnm + ' w' + items.width + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items.width + 'px; left: ' + _this.obj.uiSliderLeft + 'px;" data-count="' + _this.boxLength + '" data-box-width="' + items.width + '"></div>';
-							_this.boxLength++;
-						});
-						$(_this.obj.boxAppendWrap).append(_this.boxAppendHtml + '<div class="box"></div>');
-						_this.boxAppendHtml = '';
+					_this.obj.boxArry.forEach(function(item, idx) {
+						for (var i = 0; i < item; i++) {
+							_this.boxGetArry.push(_this.obj.box[idx]);
+						}
+					});
+					if (_this.obj.random) {
+						var count = _this.boxGetArry.length;
+						var temp = null;
+						for (var i = 0; i < _this.boxGetArry.length; i++) {
+							var ran = Math.floor(Math.random() * count);
+							count--;
+							temp = _this.boxGetArry[i];
+							_this.boxGetArry[i] = _this.boxGetArry[ran];
+							_this.boxGetArry[ran] = temp;
+						}
 					}
+					_this.boxGetArry.forEach(function(items) {
+						_this.boxAppendHtml += '<div class="box ' + items.clsnm + ' w' + items.width + ' ' + _this.glFun().clsFormat(_this.obj.boxAddClass) + '" style="width: ' + items.width + 'px; left: ' + _this.obj.uiSliderLeft + 'px;" data-count="' + _this.boxLength + '" data-box-width="' + items.width + '"></div>';
+						_this.boxLength++;
+					});
+					$(_this.obj.boxAppendWrap).append(_this.boxAppendHtml + '<div class="box"></div>');
+					_this.boxAppendHtml = '';
 				},
 				slider: function() {
 					var $slider = $(_this.obj.uiSlider).slider($.extend(true, {
@@ -191,9 +212,6 @@
 		boxPrevNextFun: function($target) {
 			var _this = this;
 			var $target = $target ? $target : this.crrtDropBox;
-			if (!$target.next().is('.box')) {
-				this.set().create();
-			}
 			this.nextDropBox = $target.next();
 			if ($target.prev().is('.box')) {
 				var $prev = $target.prev();
@@ -299,20 +317,35 @@
 				}
 			});
 			if (this.success) {
-				this.successLength++;
+				if (crrtBoxObj.water == 2) {
+					this.successLength += 2;
+				} else {
+					this.successLength++;
+				}
 				this.obj.successPoint += crrtBoxObj.point;
 				this.sucsCallbFun(crrtBoxObj.point);
 			}
+			this.dropBoxPoint += crrtBoxObj.point;
 			this.obj.waterHeight += crrtBoxObj.water;
 			this.waterHeightFun();
 		},
 		sucsCallbFun: function(crrtpoi) {
+			var _this = this;
 			$(this.obj.pointViewEl).append('<span class="bl_point_in po' + crrtpoi + '"></span>');
-
+			return {
+				point: function() {
+					var gp = (_this.obj.successMaxPoint * _this.obj.successPoint) / _this.dropBoxPoint;
+					if (_this.obj.successPointRound) {
+						_this.gamePoint = Math.round(gp);
+					} else {
+						_this.gamePoint = Math.floor(gp);
+					}
+				},
+			};
 		},
 		waterHeightFun: function() {
 			var $maxHehight = $(this.obj.waterHeightWrap).height();
-			var $top = $maxHehight - (($maxHehight * this.obj.waterHeight) / this.obj.waterFailHeight);
+			var $top = $maxHehight - (($maxHehight * this.obj.waterHeight) / (this.obj.waterFailHeight - this.obj.waterInitHeight));
 			var $val = $top > 0 ? $top : 0;
 			$(this.obj.waterHeightEl).css({
 				'top': $val
@@ -365,11 +398,9 @@
 			}
 		},
 		finishLineGame: function(bool) {
-			/*
-			 * 포인트 : this.obj.successPoint
-			 */
 			if (bool) {
-				alert('성공 획득포인=' + this.obj.successPoint)
+				this.sucsCallbFun().point();
+				alert('성공 획득포인=' + this.gamePoint)
 			} else {
 				$(this.obj.gameFailViewEl).show().addClass('animated slideInDown');
 			}
@@ -383,7 +414,7 @@
 			}, this.aniCallb({
 				'duration': 300,
 				'complete': function() {
-					if (_this.successLength == _this.obj.successLength) {
+					if (_this.successLength >= _this.obj.successLength) {
 						_this.finishLineGame(true);
 					}
 				},
@@ -420,7 +451,6 @@
 						mDrop: '.blMPushBtn',
 					},
 					successLength: 8,
-					waterFailHeight: 20,
 				});
 				break;
 		}
@@ -438,8 +468,8 @@
 	}
 
 	Game.start(divedeeper.code, divedeeper.schedIndex, divedeeper.seqNo, divedeeper.pointMax, callback);
-	//포인트 == buildBridge.obj.successPoint 
-	callback(divedeeper.code, divedeeper.schedIndex, divedeeper.seqNo, buildBridge.obj.successPoint);
+	//포인트 == buildBridge.gamePoint
+	callback(divedeeper.code, divedeeper.schedIndex, divedeeper.seqNo, buildBridge.gamePoint);
 	</script>
 </body>
 
