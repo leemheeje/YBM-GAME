@@ -408,9 +408,7 @@
 			this.getSuccess();
 			this.setBoxHeight();
 			this.dropMove();
-			if ((this.obj.waterHeight + this.obj.waterInitHeight) >= this.obj.waterFailHeight) {
-				this.finishLineGame(false);
-			}
+
 		},
 		finishLineGame: function(bool) {
 			this.sucsCallbFun().point();
@@ -443,18 +441,20 @@
 				this.crrtDropBox.css({
 					'visibility': 'visible',
 				}).addClass('false').animate({
-
 					'top': sucsHeight - this.crrtDropBox.height()
 				}, this.aniCallb({
+					'duration': 700,
 					'complete': function() {
 						$(this).animate({
 							'opacity': 0
 						}, _this.aniCallb({
 							'complete': function() {
 								$(this).hide();
+								if ((_this.obj.waterHeight + _this.obj.waterInitHeight) >= _this.obj.waterFailHeight) {
+									_this.finishLineGame(false);
+								}
 							}
 						}));
-
 					},
 				}));
 			}
