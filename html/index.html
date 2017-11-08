@@ -154,7 +154,7 @@
 				$('.guideline').stop().animate({
 					'width': this.limitGuideLine.width,
 					'left': this.limitGuideLine.left,
-				}).css('background-color', '#fff');
+				}) //.css('background-color', '#fff');
 			}
 			this.set().slider();
 			this.set().create();
@@ -408,7 +408,6 @@
 			this.getSuccess();
 			this.setBoxHeight();
 			this.dropMove();
-
 		},
 		finishLineGame: function(bool) {
 			this.sucsCallbFun().point();
@@ -424,40 +423,36 @@
 		dropMove: function() {
 			var _this = this;
 			var sucsHeight = $(this.obj.boxAppendWrap).height() - this.boxHeight;
-			if (this.success) {
-				this.crrtDropBox.css({
-					'visibility': 'visible',
-				}).addClass('drop').animate({
-					'top': sucsHeight
-				}, this.aniCallb({
+			var height = this.success ? sucsHeight : sucsHeight - this.crrtDropBox.height();
+			var elAddClass = this.success ? 'drop' : 'false';
+			var dropMoveAniCallb = function() {
+				return _this.aniCallb({
 					'duration': 700,
 					'complete': function() {
-						if (_this.successLength >= _this.obj.successLength) {
-							_this.finishLineGame(true);
-						}
-					},
-				}));
-			} else {
-				this.crrtDropBox.css({
-					'visibility': 'visible',
-				}).addClass('false').animate({
-					'top': sucsHeight - this.crrtDropBox.height()
-				}, this.aniCallb({
-					'duration': 700,
-					'complete': function() {
-						$(this).animate({
-							'opacity': 0
-						}, _this.aniCallb({
-							'complete': function() {
-								$(this).hide();
-								if ((_this.obj.waterHeight + _this.obj.waterInitHeight) >= _this.obj.waterFailHeight) {
-									_this.finishLineGame(false);
-								}
+						if (_this.success) {
+							if (_this.successLength >= _this.obj.successLength) {
+								_this.finishLineGame(true);
 							}
-						}));
-					},
-				}));
-			}
+						} else {
+							$(this).animate({
+								'opacity': 0
+							}, _this.aniCallb({
+								'complete': function() {
+									$(this).hide();
+									if ((_this.obj.waterHeight + _this.obj.waterInitHeight) >= _this.obj.waterFailHeight) {
+										_this.finishLineGame(false);
+									}
+								}
+							}));
+						}
+					}
+				});
+			};
+			this.crrtDropBox.css({
+				'visibility': 'visible',
+			}).addClass(elAddClass).animate({
+				'top': height
+			}, dropMoveAniCallb());
 			this.boxCount++;
 		},
 		glFun: function() {
