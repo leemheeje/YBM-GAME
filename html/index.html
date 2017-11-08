@@ -29,13 +29,15 @@
 				<div class="shd"></div>
 			</div>
 			<div class="blGroup">
-				<div class="boxSlider"></div>
-				<div class="guideline"></div>
-				<div class="blGroupInBox">
-					<div class="box b_bar bBar"></div>
-				</div>
-				<div class="bl_point blPoint">
-					<span class="bl_point_in"></span>
+				<div class="blGroupIn">
+					<div class="boxSlider"></div>
+					<div class="guideline"></div>
+					<div class="blGroupInBox">
+						<div class="box b_bar bBar"></div>
+					</div>
+					<div class="bl_point blPoint">
+						<span class="bl_point_in"></span>
+					</div>
 				</div>
 			</div>
 			<div class="blgm_sasl tp02">
@@ -115,8 +117,8 @@
 		}, obj);
 		this.success = true;
 		this.successLength = 0;
-		this.crrtDropBox = null;
 		this.crrtBoxCount = 0;
+		this.crrtDropBox = null;
 		this.nextDropBox = null;
 		this.prevDropBox = null;
 		this.prevDropBoxArry = [];
@@ -197,17 +199,12 @@
 							$(_this.obj.boxAddClass).not('.drop').css('left', _this.obj.uiSliderLeft);
 							$('input[name=sliderValue]').val(_this.obj.uiSliderLeft);
 						},
+						min: 0,
+						max: 260
 					}, _this.obj.uiSliderObj));
 					return $slider;
 				},
 			};
-		},
-		aniCallb: function(callb) {
-			return $.extend(false, {
-				'duration': 1000,
-				'easing': 'swing',
-				'complete': function() {},
-			}, callb);
 		},
 		boxPrevNextFun: function($target) {
 			var _this = this;
@@ -412,10 +409,10 @@
 		finishLineGame: function(bool) {
 			this.sucsCallbFun().point();
 			if (bool) {
-				alert('획득포인=' + this.gamePoint)
+				alert('획득포인=' + this.gamePoint);
 			} else {
 				$(this.obj.gameFailViewEl).show().addClass('animated slideInDown');
-				alert('획득포인=' + this.gamePoint)
+				alert('획득포인=' + this.gamePoint);
 			}
 			$(document).off('keyup');
 			$(this.obj.contr.mDrop).off('click');
@@ -437,6 +434,7 @@
 							$(this).animate({
 								'opacity': 0
 							}, _this.aniCallb({
+								'duration': 300,
 								'complete': function() {
 									$(this).hide();
 									if ((_this.obj.waterHeight + _this.obj.waterInitHeight) >= _this.obj.waterFailHeight) {
@@ -453,6 +451,19 @@
 			}).addClass(elAddClass).animate({
 				'top': height
 			}, dropMoveAniCallb());
+			var sliderInitValue = (function() {
+				var $slider = _this.set().slider();
+				var $value = $slider.slider('value');
+				var cnt = $value;
+				$(_this.nextDropBox).not('.drop').animate({
+					'left': 0
+				}, _this.aniCallb({
+					'duration': 700,
+					'step': function(count) {
+						_this.set().slider().slider('value', count);
+					},
+				}));
+			})();
 			this.boxCount++;
 		},
 		glFun: function() {
@@ -462,6 +473,13 @@
 			return {
 				clsFormat: clsFormat,
 			};
+		},
+		aniCallb: function(callb) {
+			return $.extend(false, {
+				'duration': 1000,
+				'easing': 'swing',
+				'complete': function() {},
+			}, callb);
 		},
 	};
 
