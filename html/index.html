@@ -20,9 +20,9 @@
 	<div class="blgm_wrap">
 		<div class="blgm_in animated">
 			<div class="blgm_sasl tp01">
-				<span class="sas sas01"></span>
-				<span class="sas sas02"></span>
-				<div class="sas_circle "></div>
+				<span class="sas sas01 "></span>
+				<span class="sas sas02 "></span>
+				<div class="sas_circle  "></div>
 			</div>
 			<div class="blgm_lib tp01">
 				<div class="lib_tp"></div>
@@ -41,9 +41,9 @@
 				</div>
 			</div>
 			<div class="blgm_sasl tp02">
-				<span class="sas sas03"></span>
-				<span class="sas sas04"></span>
-				<div class="sas_circle"></div>
+				<span class="sas sas03 "></span>
+				<span class="sas sas04 "></span>
+				<div class="sas_circle "></div>
 			</div>
 			<div class="blgm_water_bar"></div>
 			<div class="blgm_water">
@@ -57,11 +57,54 @@
 				<div class="lib_tp"></div>
 				<div class="shd"></div>
 			</div>
+			<div class="blgm_car">
+				<div class="car"></div>
+			</div>
 			<div class="bl_fail blFailEl"></div>
 			<div class="blm_push blMPushBtn"></div>
 		</div>
+		<!-- 게임 공통 : S -->
+		<div id="ybm_game_2_ready" class="game_ready">
+			<div>
+				<span>How To Play</span>
+				<div class="guide" title="게임방법">
+					<p>구멍난 터널을 고치러 가는도중 다리가 끊어졌습니다.</p>
+					<p>크레인을 좌우로 움직여 바위를 떨어트려 쌓아 다리 기둥을 만드세요. </p>
+					<p>
+						<span class="c_red bold">안전선(Safety line)</span>까지 돌기둥을 쌓으면 자동으로 다리가 연결 됩니다.</p>
+					<p>바위를 떨어트려 쌓지 못해 물이
+						<span class="c_red bold">제한선(20미터)</span>까지 차오르면 다리가
+						<br/>무너지고 게임이 종료됩니다.</p>
+				</div>
+				<ul class='item' title="게임아이템">
+					<li>+5점
+						<span class="c_red bold">실패시 0.5미터 수면상승</span>
+					</li>
+					<li>+10점
+						<span class="c_red bold">실패시 1미터 수면상승</span>
+					</li>
+					<li>+15점
+						<span class="c_red bold">실패시 1.5미터 수면상승</span>
+					</li>
+					<li>+20점
+						<span class="c_red bold">실패시 1미터 수면상승</span>
+					</li>
+				</ul>
+				<button type="button" id="sound_set" class="on">소리 켬</button>
+				<button type="button" id="start_game_2" class="start_game">시작</button>
+			</div>
+		</div>
+		<div id="game_2_next" class="game_over">
+			<div>
+				<p><em id="game_2_point">100</em><em>포인트</em>가 적립되었습니다.</em>
+				</p>
+				<button id="game_2_over">다음</button>
+			</div>
+		</div>
+		<!-- 게임 공통 : E -->
 	</div>
 	<script type="text/javascript">
+	//var gamePath = Game.gamePath[Game.gameCode]; //폴더경로 변경값
 	var BuildBridge = function(obj) {
 		var _this = this;
 		this.obj = $.extend(true, {
@@ -85,7 +128,7 @@
 			uiSlider: '.boxSlider',
 			uiSliderLeft: 0,
 			uiSliderObj: {},
-			boxArry: [4, 3, 1, 2],
+			boxArry: [4, 3, 2, 1],
 			box: [{
 					clsnm: 'box01',
 					point: 5,
@@ -97,17 +140,17 @@
 					water: 1,
 					width: 111,
 				}, {
-					clsnm: 'box04',
-					point: 20,
-					water: 2,
-					width: 202,
-				}, {
 					clsnm: 'box03',
 					point: 15,
 					water: 1.5,
 					width: 155,
 				},
-
+				{
+					clsnm: 'box04',
+					point: 20,
+					water: 2,
+					width: 202,
+				},
 			],
 			random: true,
 			boxAppendWrap: '.blGroupInBox',
@@ -148,6 +191,7 @@
 		this.boxAppendHtml = '';
 		this.dropBoxPoint = 0;
 		this.gamePoint = 0;
+		this.objAnimate().init();
 		this.init();
 	};
 	BuildBridge.prototype = {
@@ -156,7 +200,7 @@
 				$('.guideline').stop().animate({
 					'width': this.limitGuideLine.width,
 					'left': this.limitGuideLine.left,
-				}) //.css('background-color', '#fff');
+				}).css('background-color', '#fff');
 			}
 			this.set().slider();
 			this.set().create();
@@ -164,6 +208,20 @@
 			this.boxPrevNextFun();
 			this.setBoxHeight();
 			this.dropBind();
+		},
+		objAnimate: function() {
+			var _this = this;
+			return {
+				init: function() {
+					$(_this.obj.waterHeightEl).addClass('ani_active');
+					$(_this.obj.uiSlider).addClass('ani_active');
+				},
+				success: function() {
+					$('.sas, .sas_circle, .blgm_car,.blgm_lib').addClass('ani_active');
+					//$('.blgm_in').addClass('shake');
+					$(_this.obj.uiSlider).removeClass('ani_active');
+				},
+			};
 		},
 		set: function() {
 			var _this = this;
@@ -200,7 +258,7 @@
 							$('input[name=sliderValue]').val(_this.obj.uiSliderLeft);
 						},
 						min: 0,
-						max: 260
+						max: 260,
 					}, _this.obj.uiSliderObj));
 					return $slider;
 				},
@@ -409,11 +467,15 @@
 		finishLineGame: function(bool) {
 			this.sucsCallbFun().point();
 			if (bool) {
-				alert('획득포인=' + this.gamePoint);
+				this.objAnimate().success();
 			} else {
 				$(this.obj.gameFailViewEl).show().addClass('animated slideInDown');
-				alert('획득포인=' + this.gamePoint);
 			}
+			$('#game_2_point').text(this.gamePoint);
+			setTimeout(function() {
+				$('#game_2_next').show();
+			}, 2500);
+			Game.point = this.gamePoint; //cny 획득포인트 추가
 			$(document).off('keyup');
 			$(this.obj.contr.mDrop).off('click');
 		},
@@ -455,10 +517,11 @@
 				var $slider = _this.set().slider();
 				var $value = $slider.slider('value');
 				var cnt = $value;
-				$(_this.nextDropBox).not('.drop').animate({
+				$(_this.nextDropBox).not('.drop').stop().animate({
 					'left': 0
 				}, _this.aniCallb({
 					'duration': 700,
+					'queue': false,
 					'step': function(count) {
 						_this.set().slider().slider('value', count);
 					},
@@ -485,34 +548,26 @@
 
 	var Game = {};
 	var buildBridge = null;
-	Game.start = function(gameCode, schedIndex, seqNo, pointMax, callback) {
-		switch (gameCode) {
-			case 1001:
-				buildBridge = new BuildBridge({
-					contr: {
-						//drop: 40,
-						mDrop: '.blMPushBtn',
-					},
-					successLength: 8,
-				});
-				break;
+	$('#start_game_2').off().on('click', function() {
+		$('#ybm_game_2_ready').hide();
+		buildBridge = new BuildBridge({
+			contr: {
+				//drop: 40,//아래방향키
+				mDrop: '.blMPushBtn',
+			},
+			successLength: 8,
+		});
+	});
+	//끝났을때
+	//cny 마지막 Next버튼 클릭시 LMS에 값 저장하기
+	$('#game_2_over').off().click(function() {
+		Game.saved = callback(Game.gameCode, Game.schedIndex, Game.seqNo, Game.point);
+		if (Game.saved) {
+			Game.ending();
+		} else {
+			if (confirm("통신상태가 원할하지 못해 게임점수가 저장되지 않았습니다.\n그래도 진행하시겠습니까?")) Game.ending();
 		}
-	}
-
-	function callback(gameCode, schedIndex, seqNo, point, errorCode, errorMessage) {
-		//임시로 저장완료 리턴.
-		return 1;
-	}
-	var divedeeper = {
-		code: 1001, //게임코드(1001~1020)
-		schedIndex: 121, // 학습일련번호 
-		seqNo: 25, // 학습내 액티비티 번호
-		pointMax: 25 //게임 최고획득점수(만점)
-	}
-
-	Game.start(divedeeper.code, divedeeper.schedIndex, divedeeper.seqNo, divedeeper.pointMax, callback);
-	//포인트 == buildBridge.gamePoint
-	callback(divedeeper.code, divedeeper.schedIndex, divedeeper.seqNo, buildBridge.gamePoint);
+	});
 	</script>
 </body>
 
