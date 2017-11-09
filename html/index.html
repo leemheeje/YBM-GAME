@@ -30,7 +30,7 @@
 			</div>
 			<div class="blGroup">
 				<div class="blGroupIn">
-					<div class="boxSlider"></div>
+					<span class="trn_img trnImg"></span>
 					<div class="guideline"></div>
 					<div class="blGroupInBox">
 						<div class="box b_bar bBar"></div>
@@ -63,6 +63,7 @@
 			<div class="bl_fail blFailEl"></div>
 			<div class="blm_push blMPushBtn"></div>
 			<div class="blm_move"></div>
+			<div class="boxSlider"></div>
 		</div>
 		<!-- 게임 공통 : S -->
 		<div id="ybm_game_2_ready" class="game_ready">
@@ -129,6 +130,7 @@
 			uiSlider: '.boxSlider',
 			uiSliderLeft: 0,
 			uiSliderObj: {},
+			trnImg: '.trnImg',
 			boxArry: [4, 3, 2, 1],
 			box: [{
 					clsnm: 'box01',
@@ -192,7 +194,9 @@
 		this.boxAppendHtml = '';
 		this.dropBoxPoint = 0;
 		this.gamePoint = 0;
+		this.mobile = false;
 		this.objAnimate().init();
+		this.user();
 		this.init();
 	};
 	BuildBridge.prototype = {
@@ -210,17 +214,31 @@
 			this.setBoxHeight();
 			this.dropBind();
 		},
+		user: function() {
+			var user = navigator.userAgent;
+			var userArray = [
+				['mob', user.indexOf('Mobile') != -1],
+				['android', user.indexOf('Android') != -1],
+				['iphone', user.indexOf('iPhone') != -1]
+			];
+			for (var i = 0; i < userArray.length; i++) {
+				if (userArray[i][1]) {
+					$('html').addClass(userArray[i][0]);
+					this.mobile = true;
+				}
+			}
+		},
 		objAnimate: function() {
 			var _this = this;
 			return {
 				init: function() {
 					$(_this.obj.waterHeightEl).addClass('ani_active');
-					$(_this.obj.uiSlider).addClass('ani_active');
+					$(_this.obj.trnImg).addClass('ani_active');
 				},
 				success: function() {
 					$('.sas, .sas_circle, .blgm_car,.blgm_lib').addClass('ani_active');
 					//$('.blgm_in').addClass('shake');
-					$(_this.obj.uiSlider).removeClass('ani_active');
+					$(_this.obj.trnImg).removeClass('ani_active');
 				},
 			};
 		},
@@ -256,7 +274,7 @@
 						slide: function(e, el) {
 							_this.obj.uiSliderLeft = el.handle.offsetLeft;
 							$(_this.obj.boxAddClass).not('.drop').css('left', _this.obj.uiSliderLeft);
-							$('input[name=sliderValue]').val(_this.obj.uiSliderLeft);
+							$(_this.obj.trnImg).css('left', _this.obj.uiSliderLeft);
 						},
 						min: 0,
 						max: 260,
@@ -286,7 +304,7 @@
 			this.nextDropBox.css({
 				'margin-left': -(this.nextDropBoxObj.width / 2)
 			});
-			$(this.obj.uiSlider).attr('data-type', '' + this.nextDropBoxObj.width);
+			$(this.obj.trnImg).attr('data-type', '' + this.nextDropBoxObj.width);
 		},
 		setBoxPosition: function($target) {
 			var $target = $target ? $target : this.crrtDropBox;
@@ -527,6 +545,7 @@
 						_this.set().slider().slider('value', count);
 					},
 				}));
+				$(_this.obj.trnImg).animate({ 'left': 0 });
 			})();
 			this.boxCount++;
 		},
@@ -557,7 +576,7 @@
 			},
 			successLength: 8,
 		});
-	});
+	}).click();
 	//끝났을때
 	//cny 마지막 Next버튼 클릭시 LMS에 값 저장하기
 	$('#game_2_over').off().click(function() {
