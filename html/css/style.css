@@ -157,7 +157,7 @@ body{background: #282828;}
 .trn_img[data-type="75"]:after{background-image: url(../images/trn_75.png); width: 131px; left: -65px;}
 .trn_img[data-type="111"]:after{background-image: url(../images/trn_111.png); width: 168px; left: -84px;}
 .trn_img[data-type="155"]:after{background-image: url(../images/trn_155.png); width: 194px; left: -97px;}
-.trn_img[data-type="202"]:after{background-image: url(../images/trn_202.png); width: 240px; left: -120px; top: -48px;}
+.trn_img[data-type="202"]:after{background-image: url(../images/trn_202.png); width: 240px; left: -120px; top: -58px;}
 .mob .blm_push{position: absolute; left: auto; right: 12px; bottom: 10px; width: 145px; height: 106px; background: url(../images/mob_drop.png) no-repeat left top; z-index: 50;}
 
 
@@ -170,6 +170,7 @@ body{background: #282828;}
 
 
 /**/
+.hidden{position: absolute; left: -9999em;}
 .c_red{color: #ed1e79 !important;}
 .bold{font-weight: bold !important;}
 .start_game{
