@@ -516,7 +516,10 @@
 			});
 			$(this.obj.contr.mDrop).on({
 				'click': function() {
-					_this.bindCallbFun();
+					if(_this.dropBool){
+						_this.dropBool = false;
+						_this.bindCallbFun();
+					}
 				},
 			});
 			$(document).click(function() {
