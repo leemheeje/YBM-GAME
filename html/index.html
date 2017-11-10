@@ -112,10 +112,10 @@
 			<audio src="./sound/fall.mp3" class="sndLst tp03"></audio>
 			<audio src="./sound/Splash.mp3" class="sndLst tp04"></audio>
 		</div>
+		<button id="ios_audio_button" class="">사운드 온오프</button>
 	</div>
 	<script type="text/javascript">
 	//var gamePath = Game.gamePath[Game.gameCode]; //폴더경로 변경값
-	//$('#bg_audio')[0].muted = true;
 	var BuildBridge = function(obj) {
 		var _this = this;
 		this.obj = $.extend(true, {
@@ -202,11 +202,13 @@
 		this.boxHistroyArry = [];
 		this.boxAppendHtml = '';
 		this.dropBoxPoint = 0;
+		this.dropBool = true;
 		this.gamePoint = 0;
 		this.mobile = false;
 		this.sound = {
 			bool: true,
 			el: '.soundPlayLst',
+			onoff: '#ios_audio_button',
 			//돌떨어지고나서 부딪히는소리  , 크레인움직이는, 박스떨어질때, 물에닿앗을때
 			lst: ['.sndLst.tp01', '.sndLst.tp02', '.sndLst.tp03', '.sndLst.tp04'],
 		};
@@ -217,7 +219,16 @@
 	};
 	BuildBridge.prototype = {
 		setSound: function() {
+			var _this = this;
 			var button = '';
+			$(this.sound.onoff).off().on('click', function() {
+				$(this).toggleClass('off');
+				if ($(this).is('.off')) {
+					_this.sound.bool = false;
+				} else {
+					_this.sound.bool = true;
+				}
+			});
 			for (var i = 0; i < this.sound.lst.length; i++) {
 				$(this.sound.lst[i]).attr('data-sudfile', i);
 				button += '<button data-sudbutton="' + i + '" class="hidden" type="button">오디오버튼</button>';
@@ -229,7 +240,6 @@
 				var $el = $(el);
 				var $data = $el.data('sudfile');
 				$el[0].muted = false;
-				//$('[data-sudfile="' + $data + '"]')[0].autoplay = true;
 				$('[data-sudbutton="' + $data + '"]').off().on('click', function() {
 					$('[data-sudfile="' + $data + '"]')[0].play();
 				}).click();
@@ -271,7 +281,6 @@
 					$(_this.obj.trnImg).addClass('ani_active');
 				},
 				success: function() {
-					_this.getSound(_this.sound.lst[0]);
 					$('.sas, .sas_circle, .blgm_car,.blgm_lib').addClass('ani_active');
 					$(_this.obj.trnImg).removeClass('ani_active');
 				},
@@ -309,7 +318,7 @@
 						slide: function(e, el) {
 							_this.obj.uiSliderLeft = el.handle.offsetLeft;
 							$(_this.obj.boxAddClass).not('.drop').css('left', _this.obj.uiSliderLeft);
-							$(_this.obj.trnImg).css('left', _this.obj.uiSliderLeft);
+							$(_this.obj.trnImg).css('left', _this.obj.uiSliderLeft).attr('data-trn', true);
 							_this.getSound(_this.sound.lst[1]);
 						},
 						min: 0,
@@ -498,9 +507,10 @@
 		},
 		dropBind: function() {
 			var _this = this;
-			$(document).keyup(function() {
+			$(document).off().on('keyup', function() {
 				var key = event.keyCode;
-				if (key == _this.obj.contr.drop) {
+				if (key == _this.obj.contr.drop && _this.dropBool) {
+					_this.dropBool = false;
 					_this.bindCallbFun();
 				}
 			});
@@ -540,47 +550,49 @@
 			var sucsHeight = $(this.obj.boxAppendWrap).height() - this.boxHeight;
 			var height = this.success ? sucsHeight : sucsHeight - this.crrtDropBox.height();
 			var elAddClass = this.success ? 'drop' : 'false';
-			var soundCount = 0;
-			var dropMoveAniCallb = function() {
-
-
-				return _this.aniCallb({
-					'duration': 700,
-					'step': function(num) {
-						var waterOffset = $(_this.obj.waterHeightEl).height() - $(_this.obj.waterHeightEl)[0].offsetTop;
-						var waterWrapOffset = $(_this.obj.boxAppendWrap).height();
-						var height = waterWrapOffset - waterOffset;
-						if (num > height) {
-							_this.getSound(_this.sound.lst[3]);
-						}
-					},
-					'complete': function() {
-						if (_this.success) {
-							_this.getSound(_this.sound.lst[0]);
-							if (_this.successLength >= _this.obj.successLength) {
-								_this.finishLineGame(true);
-							}
-						} else {
-							$(this).animate({
-								'opacity': 0
-							}, _this.aniCallb({
-								'duration': 300,
-								'complete': function() {
-									$(this).hide();
-									if ((_this.obj.waterHeight + _this.obj.waterInitHeight) >= _this.obj.waterFailHeight) {
-										_this.finishLineGame(false);
-									}
-								}
-							}));
-						}
-					}
-				});
-			};
 			this.crrtDropBox.css({
 				'visibility': 'visible',
 			}).addClass(elAddClass).animate({
 				'top': height
-			}, dropMoveAniCallb());
+			}, _this.aniCallb({
+				'duration': 700,
+				'step': function(num) {
+					var waterOffset = $(_this.obj.waterHeightEl).height() - $(_this.obj.waterHeightEl)[0].offsetTop;
+					var waterWrapOffset = $(_this.obj.boxAppendWrap).height();
+					var height = waterWrapOffset - waterOffset;
+					if (num > height) {
+						_this.getSound(_this.sound.lst[3]);
+					}
+				},
+				'complete': function() {
+					if (_this.success) {
+						if (_this.successLength >= _this.obj.successLength) {
+							_this.finishLineGame(true);
+						}
+					} else {
+						$(this).animate({
+							'opacity': 0
+						}, _this.aniCallb({
+							'duration': 300,
+							'complete': function() {
+								$(this).hide();
+								if ((_this.obj.waterHeight + _this.obj.waterInitHeight) >= _this.obj.waterFailHeight) {
+									_this.finishLineGame(false);
+								}
+							}
+						}));
+					}
+					_this.dropBool = true;
+				}
+			}));
+			if (this.mobile) {
+				_this.getSound(_this.sound.lst[3]);
+			}
+			setTimeout(function() {
+				if (_this.success) {
+					_this.getSound(_this.sound.lst[0]);
+				}
+			}, 400);
 			var sliderInitValue = (function() {
 				var $slider = _this.set().slider();
 				var $value = $slider.slider('value');
@@ -594,7 +606,7 @@
 						_this.set().slider().slider('value', count);
 					},
 				}));
-				$(_this.obj.trnImg).animate({ 'left': 0 });
+				$(_this.obj.trnImg).attr('data-trn', false).animate({ 'left': 0 });
 				_this.getSound(_this.sound.lst[2]);
 			})();
 			this.boxCount++;
