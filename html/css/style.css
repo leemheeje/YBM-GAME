@@ -5,7 +5,7 @@
 html, body{height: 100%;}
 *{box-sizing: border-box;}
 body{background: #282828;}
-.blgm_wrap{max-width: 1280px; padding: 50px 15px 15px 17px; margin: 0 auto; height: 720px; background: #65a9e0; position: relative;}
+.blgm_wrap{max-width: 1280px; padding: 66px 12px 12px 12px; margin: 0 auto; height: 720px; background: url(../images/breaktime.png) no-repeat left top #65a9e0; position: relative;}
 .blgm_in{height: 100%;  background: url(../images/tnbg_02.png) no-repeat left top; position: relative;  overflow: hidden;}
 .blgm_in:after{content: ''; width: 100%; height: 466px; background: url(../images/tnbg.png) no-repeat left top; position: absolute; left: 0; top: 188px;}
 .blGroup{margin: 0 auto; width: 500px; height: 100%; padding: 0 70px; position: relative; z-index: 10;}
@@ -353,4 +353,14 @@ body{background: #282828;}
 #ios_audio_button:focus{outline: none;}
 #ios_audio_button.off{
 	background-position:0px 0px;
+}
+#point{
+	position: absolute;
+    height: 30px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.9;
+    top: 13px;
+    right: 30px;
 }

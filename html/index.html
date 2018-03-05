@@ -9,6 +9,7 @@
 	if (location.href.indexOf(':8000') != -1) document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
 	</script>
 	<script src="./js/plugin/jquery-1.9.1.min.js"></script>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="./js/plugin/jquery-ui-1.12.1.min.js"></script>
 	<script src="./js/plugin/jquery.ui.touch-punch.min.js"></script>
 	<script src="./js/plugin/jquery.easing.1.3.js"></script>
@@ -17,11 +18,12 @@
 </head>
 
 <body>
-	<div class="blgm_wrap">
+	<div class="blgm_wrap" style="background: url(http://srmm.i234.me:5480/SRW_PRJ/htmlgame/test/games/game6_SpaceBlock/images/img_breaktime_basic-full.png)">
+		<span id="point">333</span>
 		<div class="blgm_in animated">
 			<div class="blgm_sasl tp01">
 				<span class="sas sas01 "></span>
-				<span class="sas sas02 "></span>
+				<span class="sas sas02 "></span>s
 				<div class="sas_circle  "></div>
 			</div>
 			<div class="blgm_lib tp01">
@@ -60,7 +62,7 @@
 			<div class="blgm_car">
 				<div class="car"></div>
 			</div>
-			<div class="bl_fail blFailEl"></div>
+			<!-- <div class="bl_fail blFailEl"></div> -->
 			<div class="blm_push blMPushBtn"></div>
 			<div class="blm_move"></div>
 			<div class="box_slider_wrap">
@@ -94,7 +96,6 @@
 						<span class="c_red bold">실패시 2미터 수면상승</span>
 					</li>
 				</ul>
-				<button type="button" id="sound_set" class="on">소리 켬</button>
 				<button type="button" id="start_game_2" class="start_game">시작</button>
 			</div>
 		</div>
@@ -111,11 +112,14 @@
 			<audio src="./sound/crane.mp3" class="sndLst tp02"></audio>
 			<audio src="./sound/fall.mp3" class="sndLst tp03"></audio>
 			<audio src="./sound/Splash.mp3" class="sndLst tp04"></audio>
+			<audio src="./sound/bridge.mp3" class="sndLst tp05"></audio>
+			<audio src="./sound/result.mp3" class="sndLst tp06"></audio>
+			<audio src="./sound/resultAdd30.mp3" class="sndLst tp07"></audio>
+			<audio src="./sound/start.mp3" class="sndLst tp08"></audio>
 		</div>
 		<button id="ios_audio_button" class="">사운드 온오프</button>
 	</div>
 	<script type="text/javascript">
-	//var gamePath = Game.gamePath[Game.gameCode]; //폴더경로 변경값
 	var BuildBridge = function(obj) {
 		var _this = this;
 		this.obj = $.extend(true, {
@@ -209,8 +213,8 @@
 			bool: true,
 			el: '.soundPlayLst',
 			onoff: '#ios_audio_button',
-			//돌떨어지고나서 부딪히는소리  , 크레인움직이는, 박스떨어질때, 물에닿앗을때
-			lst: ['.sndLst.tp01', '.sndLst.tp02', '.sndLst.tp03', '.sndLst.tp04'],
+			//돌떨어지고나서 부딪히는소리  , 크레인움직이는, 박스떨어질때, 물에닿앗을때, 포인트소리
+			lst: ['.sndLst.tp01', '.sndLst.tp02', '.sndLst.tp03', '.sndLst.tp04', '.sndLst.tp05', '.sndLst.tp06', '.sndLst.tp07', '.sndLst.tp08'],
 		};
 		this.objAnimate().init();
 		this.setSound();
@@ -235,7 +239,7 @@
 			}
 			$(this.sound.el).append(button);
 		},
-		getSound: function(el) {
+		getSound: function(el, stop) {
 			if (this.sound.bool) {
 				var $el = $(el);
 				var $data = $el.data('sudfile');
@@ -468,7 +472,7 @@
 			var _this = this;
 			$(this.obj.pointViewEl).append('<span class="bl_point_in po' + crrtpoi + '"></span>');
 			return {
-				point: function() {
+				pointFun: function() {
 					var gp = (_this.obj.successMaxPoint * _this.obj.successPoint) / _this.dropBoxPoint;
 					if (_this.obj.successPointRound) {
 						_this.gamePoint = Math.round(gp);
@@ -516,7 +520,7 @@
 			});
 			$(this.obj.contr.mDrop).on({
 				'click': function() {
-					if(_this.dropBool){
+					if (_this.dropBool) {
 						_this.dropBool = false;
 						_this.bindCallbFun();
 					}
@@ -534,16 +538,22 @@
 			this.dropMove();
 		},
 		finishLineGame: function(bool) {
-			this.sucsCallbFun().point();
+			var _this = this;
+			var timer = 0;
+			this.sucsCallbFun().pointFun();
 			if (bool) {
+				this.getSound(this.sound.lst[4]);
+				this.getSound(this.sound.lst[6]);
 				this.objAnimate().success();
+				timer = 3000;
 			} else {
 				$(this.obj.gameFailViewEl).show().addClass('animated slideInDown');
+				timer = 0;
 			}
 			$('#game_2_point').text(this.gamePoint);
 			setTimeout(function() {
 				$('#game_2_next').show();
-			}, 2500);
+			}, timer);
 			Game.point = this.gamePoint; //cny 획득포인트 추가
 			$(document).off('keyup');
 			$(this.obj.contr.mDrop).off('click');
@@ -571,6 +581,11 @@
 					if (_this.success) {
 						if (_this.successLength >= _this.obj.successLength) {
 							_this.finishLineGame(true);
+							return;
+						}
+						if ((_this.obj.waterHeight + _this.obj.waterInitHeight) >= _this.obj.waterFailHeight) {
+							_this.finishLineGame(false);
+							return;
 						}
 					} else {
 						$(this).animate({
@@ -590,6 +605,16 @@
 			}));
 			if (this.mobile) {
 				_this.getSound(_this.sound.lst[3]);
+				if (_this.success) {
+					if (_this.successLength >= _this.obj.successLength) {
+						_this.getSound(_this.sound.lst[4]);
+						_this.getSound(_this.sound.lst[6]);
+					}
+				} else {
+					if ((_this.obj.waterHeight + _this.obj.waterInitHeight) >= _this.obj.waterFailHeight) {
+						_this.getSound(_this.sound.lst[5]);
+					}
+				}
 			}
 			setTimeout(function() {
 				if (_this.success) {
@@ -630,7 +655,6 @@
 			}, callb);
 		},
 	};
-
 	var Game = {};
 	var buildBridge = null;
 	$('#start_game_2').off().on('click', function() {
@@ -641,7 +665,8 @@
 			},
 			successLength: 8,
 		});
-	}).click();
+		buildBridge.getSound(buildBridge.sound.lst[7]);
+	});
 	//끝났을때
 	//cny 마지막 Next버튼 클릭시 LMS에 값 저장하기
 	$('#game_2_over').off().click(function() {
